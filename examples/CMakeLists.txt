@@ -1,0 +1,5 @@
+add_subdirectory(authorize)
+add_subdirectory(gcontactbash)
+add_subdirectory(gdrivebash)
+add_subdirectory(gmailbash)
+add_subdirectory(gtaskbash)
