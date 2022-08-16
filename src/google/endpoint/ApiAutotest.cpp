@@ -7,7 +7,7 @@ using namespace googleQt;
 
 bool ApiAutotest::init(QString filePathName){
     close();
-    m_out = fopen(filePathName.toStdString().c_str(), "wb");
+    m_out = fopen(filePathName.toUtf8(), "wb");
     if (m_out) {
         setvbuf(m_out, NULL, _IONBF, 0);
     }
@@ -61,12 +61,12 @@ ApiAutotest& ApiAutotest::operator << (const int & val)
 
 ApiAutotest& ApiAutotest::operator << (const QNetworkRequest & r){
     QString s = QString("POST %1").arg(r.url().toString());
-    log_string(s.toStdString().c_str());
+    log_string(s.toUtf8());
 
     QList<QByteArray> lst = r.rawHeaderList();
     for (QList<QByteArray>::iterator i = lst.begin(); i != lst.end(); i++) {
         s = QString("--header %1: %2").arg(i->constData()).arg(r.rawHeader(*i).constData());
-        log_string(s.toStdString().c_str());
+        log_string(s.toUtf8());
     }
     return *this;
 }
@@ -150,7 +150,7 @@ QByteArray ApiAutotest::generateData(const char* context_class_name, int context
             if (parent_context_index == 0)
                 {
                     QString tmp = sample_html;
-                    tmp.remove(QRegExp("<[^>]*>"));
+                    tmp.remove(QRegularExpression("<[^>]*>"));
                     s = tmp;
                 }
             else if (parent_context_index == 1)
@@ -158,7 +158,7 @@ QByteArray ApiAutotest::generateData(const char* context_class_name, int context
                     s = sample_html;
                 }
 
-            rv = QByteArray(s.toStdString().c_str()).toBase64(QByteArray::Base64UrlEncoding);
+            rv = QByteArray(s.toUtf8()).toBase64(QByteArray::Base64UrlEncoding);
         }else if (strcmp(context_class_name, "attachments::MessageAttachment") == 0){
             if(m_attachmentDataGenerationOn){
                 rv = QByteArray("Attachment from AUTOTEST-DATA").toBase64(QByteArray::Base64UrlEncoding);                

@@ -80,7 +80,7 @@ void GcontactCommands::ls_contacts_date(QString updatedMin)
 void GcontactCommands::update_contact_user_field(QString contactId_key_value) 
 {
     QStringList arg_list = contactId_key_value.split(" ",
-        QString::SkipEmptyParts);
+        Qt::SkipEmptyParts);
 
     if (arg_list.size() < 3)
     {
@@ -172,7 +172,7 @@ void GcontactCommands::create_contact(QString email_first_last)
     }
 
     QStringList arg_list = email_first_last.split(" ",
-        QString::SkipEmptyParts);
+        Qt::SkipEmptyParts);
 
     if (arg_list.size() < 3)
     {
@@ -491,7 +491,7 @@ void GcontactCommands::update_contact_name(QString contactId_name)
 {
     ///first we get contact, make changes, merge them and upload modified xml
     QStringList arg_list = contactId_name.split(" ",
-        QString::SkipEmptyParts);
+        Qt::SkipEmptyParts);
 
     if (arg_list.size() < 3)
     {
@@ -572,7 +572,7 @@ void GcontactCommands::download_photo(QString contactid)
 void GcontactCommands::upload_photo(QString contactid_space_file_name)
 {
     QStringList arg_list = contactid_space_file_name.split(" ",
-        QString::SkipEmptyParts);
+        Qt::SkipEmptyParts);
 
     if (arg_list.size() < 2)
     {
@@ -712,7 +712,7 @@ void GcontactCommands::get_group(QString groupid)
 void GcontactCommands::create_group(QString title_content)
 {
     QStringList arg_list = title_content.split(" ",
-        QString::SkipEmptyParts);
+        Qt::SkipEmptyParts);
 
     if (arg_list.size() < 2)
     {
@@ -770,7 +770,7 @@ void GcontactCommands::update_group_title(QString groupId_title)
 {
     ///first we get contact, make changes, merge them and upload modified xml
     QStringList arg_list = groupId_title.split(" ",
-        QString::SkipEmptyParts);
+        Qt::SkipEmptyParts);
 
     if (arg_list.size() < 2)
     {
@@ -831,7 +831,7 @@ void GcontactCommands::set_contact_groups(QString contactId_space_groupId)
 {
     ///first we get contact, make changes, merge them and upload modified xml
     QStringList arg_list = contactId_space_groupId.split(" ",
-        QString::SkipEmptyParts);
+        Qt::SkipEmptyParts);
 
     if (arg_list.size() < 1)
     {
@@ -1149,7 +1149,7 @@ void GcontactCommands::batch_list_contacts(QString id_space_id)
     }
 
     QStringList arg_list = id_space_id.split(" ",
-        QString::SkipEmptyParts);
+        Qt::SkipEmptyParts);
 
     try
     {
@@ -1179,7 +1179,7 @@ void GcontactCommands::batch_create_contact(QString name_space_name)
     }
 
     QStringList arg_list = name_space_name.split(" ",
-        QString::SkipEmptyParts);
+        Qt::SkipEmptyParts);
 
     try
     {
@@ -1213,7 +1213,7 @@ void GcontactCommands::batch_update_contact(QString id_space_id)
     }
 
     QStringList arg_list = id_space_id.split(" ",
-        QString::SkipEmptyParts);
+        Qt::SkipEmptyParts);
 
 
     try
@@ -1258,7 +1258,7 @@ void GcontactCommands::batch_delete_contact(QString id_space_id)
     }
 
     QStringList arg_list = id_space_id.split(" ",
-        QString::SkipEmptyParts);
+        Qt::SkipEmptyParts);
 
     try
     {
@@ -1288,7 +1288,7 @@ void GcontactCommands::batch_list_groups(QString id_space_id)
     }
 
     QStringList arg_list = id_space_id.split(" ",
-        QString::SkipEmptyParts);
+        Qt::SkipEmptyParts);
 
     try
     {
@@ -1318,7 +1318,7 @@ void GcontactCommands::batch_create_group(QString name_space_name)
     }
 
     QStringList arg_list = name_space_name.split(" ",
-        QString::SkipEmptyParts);
+        Qt::SkipEmptyParts);
 
     try
     {
@@ -1350,7 +1350,7 @@ void GcontactCommands::batch_update_group(QString id_space_id)
     }
 
     QStringList arg_list = id_space_id.split(" ",
-        QString::SkipEmptyParts);
+        Qt::SkipEmptyParts);
 
 
     try
@@ -1399,7 +1399,7 @@ void GcontactCommands::batch_delete_group(QString id_space_id)
     }
 
     QStringList arg_list = id_space_id.split(" ",
-        QString::SkipEmptyParts);
+        Qt::SkipEmptyParts);
 
     try
     {
@@ -1452,7 +1452,7 @@ void GcontactCommands::cache_get_contact(QString cid)
 void GcontactCommands::cache_update(QString id_space_id)
 {
     QStringList arg_list = id_space_id.split(" ",
-        QString::SkipEmptyParts);
+        Qt::SkipEmptyParts);
 
     if (arg_list.empty())
     {
@@ -1489,7 +1489,7 @@ void GcontactCommands::cache_update(QString id_space_id)
 void GcontactCommands::cache_delete(QString id_space_id)
 {
     QStringList arg_list = id_space_id.split(" ",
-        QString::SkipEmptyParts);
+        Qt::SkipEmptyParts);
 
     if (arg_list.empty())
     {
@@ -1581,7 +1581,7 @@ void GcontactCommands::sync_cache_photos()
 void GcontactCommands::add_cache_photo(QString id_space_file_name)
 {
     QStringList arg_list = id_space_file_name.split(" ",
-        QString::SkipEmptyParts);
+        Qt::SkipEmptyParts);
 
     if (arg_list.size() < 2)
     {

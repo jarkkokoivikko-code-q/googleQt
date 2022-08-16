@@ -175,7 +175,7 @@ bool ContactXmlPersistant::parseXml(const QByteArray & data)
 
 bool ContactXmlPersistant::verifyXml(const QString & xml) 
 {
-    QByteArray data(xml.toStdString().c_str());
+    QByteArray data(xml.toUtf8());
 
     QDomDocument doc;
     QString errorMsg = 0;
@@ -196,7 +196,7 @@ bool ContactXmlPersistant::verifyXml(const QString & xml)
 
 bool ContactXmlPersistant::parseXml(const QString & xml)
 {
-    QByteArray d(xml.toStdString().c_str());
+    QByteArray d(xml.toUtf8());
     return parseXml(d);
 };
 
@@ -208,7 +208,7 @@ QString ContactXmlPersistant::mergedXml(QString mergeOrigin)const
     }
 
     /// try to merge data into original xml
-    QByteArray data(mergeOrigin.toStdString().c_str());
+    QByteArray data(mergeOrigin.toUtf8());
     QDomDocument doc;
     QString errorMsg = 0;
     int errorLine;

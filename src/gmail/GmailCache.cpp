@@ -968,7 +968,7 @@ void mail_cache::GMailCacheQueryTask::fetchMessage(messages::MessageResource* m)
                         QByteArray payload_body = QByteArray::fromBase64(p.body().data(), QByteArray::Base64UrlEncoding);
                         html_text = payload_body.constData();
                         plain_text = html_text;
-                        plain_text.remove(QRegExp("<[^>]*>"));
+                        plain_text.remove(QRegularExpression("<[^>]*>"));
                     }
                 else
                     {
@@ -977,7 +977,7 @@ void mail_cache::GMailCacheQueryTask::fetchMessage(messages::MessageResource* m)
                         if (pres.html_text_loaded) {
                             if (!pres.plain_text_loaded) {
                                 plain_text = html_text;
-                                plain_text.remove(QRegExp("<[^>]*>"));
+                                plain_text.remove(QRegularExpression("<[^>]*>"));
                                 pres.plain_text_loaded = true;
                             }
                         }
@@ -996,7 +996,7 @@ void mail_cache::GMailCacheQueryTask::fetchMessage(messages::MessageResource* m)
                                 if (pres.html_text_loaded) {
                                     if (!pres.plain_text_loaded) {
                                         plain_text = html_text;
-                                        plain_text.remove(QRegExp("<[^>]*>"));
+                                        plain_text.remove(QRegularExpression("<[^>]*>"));
                                         pres.plain_text_loaded = true;
                                     }
                                 }

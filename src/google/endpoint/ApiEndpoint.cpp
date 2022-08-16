@@ -341,26 +341,26 @@ QNetworkReply* ApiEndpoint::MPartUpload_requester::request(QNetworkRequest& r)
     }
                 
     QString delimiter("OooOOoo17gqt");
-    QByteArray bytes2post = QString("--%1\r\n").arg(delimiter).toStdString().c_str();
-    bytes2post += QString("Content-Type: application/json; charset=UTF-8\r\n").toStdString().c_str();             
+    QByteArray bytes2post = QString("--%1\r\n").arg(delimiter).toUtf8();
+    bytes2post += QString("Content-Type: application/json; charset=UTF-8\r\n").toUtf8();
     bytes2post += "\r\n";
     bytes2post += meta_bytes;
                 
     bytes2post += "\r\n";
-    bytes2post += QString("--%1\r\n").arg(delimiter).toStdString().c_str();
-    bytes2post += QString("Content-Type: application/octet-stream\r\n").toStdString().c_str();
-    bytes2post += QString("Content-Transfer-Encoding: base64\r\n\r\n").toStdString().c_str();
+    bytes2post += QString("--%1\r\n").arg(delimiter).toUtf8();
+    bytes2post += QString("Content-Type: application/octet-stream\r\n").toUtf8();
+    bytes2post += QString("Content-Transfer-Encoding: base64\r\n\r\n").toUtf8();
     //bytes2post += "\r\n";
     if (m_readFrom) {
         //        bytes2post += m_readFrom->readAll().toBase64(QByteArray::Base64UrlEncoding);
         bytes2post += m_readFrom->readAll().toBase64(QByteArray::Base64Encoding);
     }
     bytes2post += "\r\n";
-    bytes2post += QString("--%1--\r\n").arg(delimiter).toStdString().c_str();
+    bytes2post += QString("--%1--\r\n").arg(delimiter).toUtf8();
 
     QString content_str = QString("multipart/related; boundary=%1").arg(delimiter);
-    r.setRawHeader("Content-Type", content_str.toStdString().c_str());
-    r.setRawHeader("Content-Length", QString("%1").arg(bytes2post.size()).toStdString().c_str());
+    r.setRawHeader("Content-Type", content_str.toUtf8());
+    r.setRawHeader("Content-Length", QString("%1").arg(bytes2post.size()).toUtf8());
     if (!r.url().path().endsWith("files"))
         return m_ep.patchData(r, bytes2post);
     return m_ep.postData(r, bytes2post);

@@ -194,7 +194,7 @@ namespace googleQt{
                     bytes2post = doc.toJson(QJsonDocument::Compact);
                 }           
                 r.setRawHeader("Content-Type", "application/json; charset=utf-8");
-                r.setRawHeader("Content-Length", QString("%1").arg(bytes2post.size()).toStdString().c_str());
+                r.setRawHeader("Content-Length", QString("%1").arg(bytes2post.size()).toUtf8());
                 return m_ep.patchData(r, bytes2post);
             }
         protected:
@@ -218,7 +218,7 @@ namespace googleQt{
                     bytes2post = doc.toJson(QJsonDocument::Compact);
                 }
                 r.setRawHeader("Content-Type", "message/rfc822");
-                r.setRawHeader("Content-Length", QString("%1").arg(bytes2post.size()).toStdString().c_str());
+                r.setRawHeader("Content-Length", QString("%1").arg(bytes2post.size()).toUtf8());
                 return m_ep.postData(r, bytes2post);
             }
         protected:
@@ -272,7 +272,7 @@ namespace googleQt{
             QNetworkReply * request(QNetworkRequest& r)override
             {
                 r.setRawHeader("Content-Type", "application/octet-stream");
-                r.setRawHeader("Content-Length", QString("%1").arg(m_readFrom ? m_readFrom->size() : 0).toStdString().c_str());
+                r.setRawHeader("Content-Length", QString("%1").arg(m_readFrom ? m_readFrom->size() : 0).toUtf8());
                 return R::m_ep.postData(r, m_readFrom ? m_readFrom->readAll() : QByteArray());
             }
         protected:
@@ -321,7 +321,7 @@ namespace googleQt{
                 :contact_requester(e), m_xml(std::move(xml)) {}
             QNetworkReply * request(QNetworkRequest& r)override
             {
-                QByteArray bytes2post(m_xml.toStdString().c_str());
+                QByteArray bytes2post(m_xml.toUtf8());
                 r.setRawHeader("Content-Type", "application/atom+xml");
                 r.setRawHeader("GData-Version", "3.0");
                 return m_ep.postData(r, bytes2post);
@@ -337,8 +337,8 @@ namespace googleQt{
                 :contact_requester(e), m_etag(std::move(etag)), m_xml(std::move(xml)) {}
             QNetworkReply * request(QNetworkRequest& r)override
             {
-                QByteArray bytes2post(m_xml.toStdString().c_str());
-                r.setRawHeader("If-Match", m_etag.toStdString().c_str());
+                QByteArray bytes2post(m_xml.toUtf8());
+                r.setRawHeader("If-Match", m_etag.toUtf8());
                 r.setRawHeader("GData-Version", "3.0");
                 r.setRawHeader("Content-Type", "application/atom+xml");
                 return m_ep.putData(r, bytes2post);
@@ -356,7 +356,7 @@ namespace googleQt{
                 :contact_requester(e), m_etag(std::move(etag)) {}
             QNetworkReply * request(QNetworkRequest& r)override
             {
-                r.setRawHeader("If-Match", m_etag.toStdString().c_str());
+                r.setRawHeader("If-Match", m_etag.toUtf8());
                 return m_ep.deleteData(r);
             }
         protected:
@@ -378,9 +378,9 @@ namespace googleQt{
 
             QNetworkReply * request(QNetworkRequest& r)override
             {
-                r.setRawHeader("If-Match", m_etag.toStdString().c_str());
+                r.setRawHeader("If-Match", m_etag.toUtf8());
                 r.setRawHeader("Content-Type", "image/*");
-                r.setRawHeader("Content-Length", QString("%1").arg(m_readFrom ? m_readFrom->size() : 0).toStdString().c_str());
+                r.setRawHeader("Content-Length", QString("%1").arg(m_readFrom ? m_readFrom->size() : 0).toUtf8());
                 return m_ep.putData(r, m_readFrom ? m_readFrom->readAll() : QByteArray());
             }
         protected:

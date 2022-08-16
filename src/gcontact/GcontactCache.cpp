@@ -2029,7 +2029,7 @@ template <class T>
 bool autoTestCheckImportExport(T* ci) 
 {
     QString xml = ci->toXml("me@gmail.com");
-    QByteArray data(xml.toStdString().c_str());
+    QByteArray data(xml.toUtf8());
 
     QDomDocument doc;
     QString errorMsg = 0;
@@ -2438,7 +2438,7 @@ std::unique_ptr<ContactList> ContactList::EXAMPLE(int context_index, int parent_
     if (idset.empty()) {
         idset.insert("c1id");
     }
-    QByteArray d(XmlContactsResponseSample(idset).toStdString().c_str());
+    QByteArray d(XmlContactsResponseSample(idset).toUtf8());
     std::unique_ptr<ContactList> rv(new ContactList());
     rv->parseXml(d);
     return rv;
@@ -2450,7 +2450,7 @@ std::unique_ptr<GroupList> GroupList::EXAMPLE(int, int)
     if (idset.empty()) {
         idset.insert("g1id");
     }
-    QByteArray d(XmlContactsResponseSample(idset).toStdString().c_str());
+    QByteArray d(XmlContactsResponseSample(idset).toUtf8());
     std::unique_ptr<GroupList> rv(new GroupList());
     rv->parseXml(d);
     return rv;
@@ -2462,7 +2462,7 @@ std::unique_ptr<BatchContactList> BatchContactList::EXAMPLE(int, int)
     if (bid_lst.empty()) {
         bid_lst.push_back(std::pair<QString, googleQt::EBatchId>("c1id", googleQt::EBatchId::retrieve));
     }
-    QByteArray d(XmlContactsBatchResponseSample(bid_lst).toStdString().c_str());
+    QByteArray d(XmlContactsBatchResponseSample(bid_lst).toUtf8());
     std::unique_ptr<BatchContactList> rv(new BatchContactList());
     rv->parseXml(d);
     return rv;
@@ -2474,7 +2474,7 @@ std::unique_ptr<BatchGroupList> BatchGroupList::EXAMPLE(int, int)
     if (bid_lst.empty()) {
         bid_lst.push_back(std::pair<QString, googleQt::EBatchId>("g1id", googleQt::EBatchId::retrieve));
     }
-    QByteArray d(XmlContactsBatchResponseSample(bid_lst).toStdString().c_str());
+    QByteArray d(XmlContactsBatchResponseSample(bid_lst).toUtf8());
     std::unique_ptr<BatchGroupList> rv(new BatchGroupList());
     rv->parseXml(d);
     return rv;

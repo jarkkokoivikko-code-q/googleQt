@@ -33,7 +33,7 @@ void GtaskCommands::ls(QString tasklist_arg)
     QString tasklist = "";
     if(tasklist_arg.indexOf(" ") != -1){
         //with parameters..
-        QStringList arg_list = tasklist_arg.split(" ", QString::SkipEmptyParts);
+        QStringList arg_list = tasklist_arg.split(" ", Qt::SkipEmptyParts);
         if (arg_list.size() > 0)            
                 tasklist = arg_list[0];
         if (arg_list.size() > 1){
@@ -83,7 +83,7 @@ void GtaskCommands::ls(QString tasklist_arg)
 
 void GtaskCommands::get(QString tlistid_space_taskid) 
 {
-    QStringList arg_list = tlistid_space_taskid.split(" ", QString::SkipEmptyParts);
+    QStringList arg_list = tlistid_space_taskid.split(" ", Qt::SkipEmptyParts);
     if (arg_list.size() < 2)
     {
         std::cout << "Invalid parameters, expected <task_list_id> <task_id>" << std::endl;
@@ -108,7 +108,7 @@ void GtaskCommands::get(QString tlistid_space_taskid)
 
 void GtaskCommands::insert(QString tlistid_space_title) 
 {
-    QStringList arg_list = tlistid_space_title.split(" ", QString::SkipEmptyParts);
+    QStringList arg_list = tlistid_space_title.split(" ", Qt::SkipEmptyParts);
     if (arg_list.size() < 2)
     {
         std::cout << "Invalid parameters, expected <task_list_id> <title>" << std::endl;
@@ -136,7 +136,7 @@ void GtaskCommands::insert(QString tlistid_space_title)
 
 void GtaskCommands::update(QString tlistid_space_taskid_title)
 {
-    QStringList arg_list = tlistid_space_taskid_title.split(" ", QString::SkipEmptyParts);
+    QStringList arg_list = tlistid_space_taskid_title.split(" ", Qt::SkipEmptyParts);
     if (arg_list.size() < 3)
     {
         std::cout << "Invalid parameters, expected <task_list_id> <task_id> <title>" << std::endl;
@@ -165,7 +165,7 @@ void GtaskCommands::update(QString tlistid_space_taskid_title)
 
 void GtaskCommands::update_note(QString tlistid_space_taskid_note)
 {
-    QStringList arg_list = tlistid_space_taskid_note.split(" ", QString::SkipEmptyParts);
+    QStringList arg_list = tlistid_space_taskid_note.split(" ", Qt::SkipEmptyParts);
     if (arg_list.size() < 3)
     {
         std::cout << "Invalid parameters, expected <task_list_id> <task_id> <note>" << std::endl;
@@ -194,7 +194,7 @@ void GtaskCommands::update_note(QString tlistid_space_taskid_note)
 
 void GtaskCommands::delete_task(QString tlistid_space_taskid)
 {
-    QStringList arg_list = tlistid_space_taskid.split(" ", QString::SkipEmptyParts);
+    QStringList arg_list = tlistid_space_taskid.split(" ", Qt::SkipEmptyParts);
     if (arg_list.size() < 2)
     {
         std::cout << "Invalid parameters, expected <task_list_id> <task_id>" << std::endl;
@@ -234,7 +234,7 @@ void GtaskCommands::clearCompleted(QString tlistid)
 
 void GtaskCommands::move(QString four_arguments)
 {
-    QStringList arg_list = four_arguments.split(" ", QString::SkipEmptyParts);
+    QStringList arg_list = four_arguments.split(" ", Qt::SkipEmptyParts);
     if (arg_list.size() < 3)
     {
         std::cout << "Invalid parameters, expected <task_list_id> <task_id> <parent_id>" << std::endl;
@@ -351,7 +351,7 @@ void GtaskCommands::delete_tlist(QString tlistid)
 
 void GtaskCommands::update_tlist(QString tlistid_space_title) 
 {
-    QStringList arg_list = tlistid_space_title.split(" ", QString::SkipEmptyParts);
+    QStringList arg_list = tlistid_space_title.split(" ", Qt::SkipEmptyParts);
     if (arg_list.size() < 2)
     {
         std::cout << "Invalid parameters, expected <task_list_id> <title>" << std::endl;
@@ -379,7 +379,7 @@ void GtaskCommands::update_tlist(QString tlistid_space_title)
 
 void GtaskCommands::reload_cache(QString tlistids)
 {
-    QStringList arg_list = tlistids.split(" ", QString::SkipEmptyParts);
+    QStringList arg_list = tlistids.split(" ", Qt::SkipEmptyParts);
     if (arg_list.size() < 1)
     {
         std::cout << "Invalid parameters, expected <task_list_id1> ..." << std::endl;
@@ -423,7 +423,7 @@ void GtaskCommands::printTask(tasks::TaskResource* r)
     std::cout << Terminal::pad("id", 15) << r->id() << std::endl
               << Terminal::pad("title", 15) << r->title() << std::endl
               << Terminal::pad("etag", 15) << r->etag() << std::endl
-              << Terminal::pad("updated", 15) << r->updated().toString(Qt::SystemLocaleShortDate) << std::endl
+              << Terminal::pad("updated", 15) << r->updated().toString(Qt::ISODateWithMs) << std::endl
               << Terminal::pad("selflink", 15) << r->selflink() << std::endl
               << Terminal::pad("parent", 15) << r->parent() << std::endl
               << Terminal::pad("notes", 15) << r->notes() << std::endl
@@ -440,7 +440,7 @@ void GtaskCommands::printTaskList(tasklists::TaskListResource* r)
     std::cout << Terminal::pad("id", 15) << r->id() << std::endl
               << Terminal::pad("title", 15) << r->title() << std::endl
               << Terminal::pad("etag", 15) << r->etag() << std::endl
-              << Terminal::pad("updated", 15) << r->updated().toString(Qt::SystemLocaleShortDate) << std::endl
+              << Terminal::pad("updated", 15) << r->updated().toString(Qt::ISODateWithMs) << std::endl
               << Terminal::pad("selflink", 15) << r->selflink() << std::endl;
 };
 

@@ -125,7 +125,7 @@ void GoogleClient::exportLastResponse(QString fileName)
         qWarning() << "Error opening file: " << fileName;
         return;
     }
-    file_in.write(lastApiCall().toStdString().c_str());
+    file_in.write(lastApiCall().toUtf8());
     file_in.write("\n-----------------------------------------\n");
     file_in.write(lastResponse());
     file_in.close();
