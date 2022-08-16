@@ -151,17 +151,17 @@ namespace googleQt {
     };
 
 
-    template<class T>
-    void jsonarray2list_of_struct_list(QJsonArray arr, std::vector<std::vector<T>>& lst)
-    {
-        int Max = arr.size();
-        for (int i = 0; i < Max; ++i) {
-            QJsonArray arr2 = arr[i].toArray();
-            std::vector<T> lst2;
-            jsonarray2struct_list(arr2, lst2);
-            lst.push_back(lst2);
-        }
-    };
+    //template<class T>
+    //void jsonarray2list_of_struct_list(QJsonArray arr, std::vector<std::vector<T>>& lst)
+    //{
+    //    int Max = arr.size();
+    //    for (int i = 0; i < Max; ++i) {
+    //        QJsonArray arr2 = arr[i].toArray();
+    //        std::vector<T> lst2;
+    //        jsonarray2struct_list(arr2, lst2);
+    //        lst.push_back(lst2);
+    //    }
+    //};
 
     template<class T>
     bool chunk_list_execution(const std::vector<T>& inputList,
@@ -350,7 +350,7 @@ namespace googleQt {
         };
     };
 
-    struct CaseInsensitiveLess : std::binary_function<std::string, std::string, bool>
+    struct CaseInsensitiveLess// : std::binary_function<std::string, std::string, bool>
     {
         bool operator() (const QString & lhs, const QString & rhs) const {
             return std::lexicographical_compare(lhs.begin(),
