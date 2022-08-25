@@ -54,10 +54,18 @@ namespace googleQt
         bool moveFile(QString fileID, QString removeParentFolderID, QString addParentFolderID);
         /// upload file using file ID obtained before, return true if succeded
         std::pair<bool, int> uploadFileUsingId(QString localFilePath, QString destFileName, QString fileId, QString parentFolderId = "", QString mimeType = "");
+        /// upload file using file ID obtained before (async)
+        void uploadFileUsingIdAsync(std::function<void(std::unique_ptr<files::FileResource>)> completed_callback,
+                                    std::function<void(std::unique_ptr<GoogleException>)> failed_callback,
+                                    QIODevice* readFrom, QString destFileName, QString fileId, QString parentFolderId = "", QString mimeType = "");
         /// upload file, delete existing, return ID of the new file
         QString uploadFile(QString localFilePath, QString destFileName, QString parentFolderId = "", QString mimeType = "");
         /// upload file, keep existing, return ID of the new file
-        QString uploadFileKeepExisting(QString localFilePath, QString destFileName, QString parentFolderId = "", QString mimeType = "");        
+        QString uploadFileKeepExisting(QString localFilePath, QString destFileName, QString parentFolderId = "", QString mimeType = "");
+        /// upload file, keep existing async
+        void uploadFileKeepExistingAsync(std::function<void(std::unique_ptr<files::FileResource>)> completed_callback,
+                                         std::function<void(std::unique_ptr<GoogleException>)> failed_callback,
+                                         QIODevice* readFrom, QString destFileName, QString parentFolderId = "", QString mimeType = "");
         /// upload file into tmp and if succeeded replace existing file on cloud
         /// this prevent data tranfer errors, alows file validation etc.
         QString upgradeFile(QString localFilePath, QString destFileName, QString parentFolderId = "");
