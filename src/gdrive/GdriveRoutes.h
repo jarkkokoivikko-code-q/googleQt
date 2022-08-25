@@ -24,12 +24,7 @@ namespace googleQt
         comments::CommentsRoutes* getComments();
         revisions::RevisionsRoutes* getRevisions();
 
-        class FolderContentMap 
-        {
-        public:
-            std::map<QString, QString> id2name;
-            std::map<QString, QString> name2id;
-        };
+        typedef QList<files::FileResource> FolderContentList;
 
         ///reserved folder for app-settings&files
         static QString appDataFolder();
@@ -74,11 +69,17 @@ namespace googleQt
         /// utility call to function with set-parameters
         int cleanUpAppDataFolder(QString name2del, QString id2keep);        
         /// returns name->folderid map for a parent folder
-        FolderContentMap mapFolders(QString parentFolderId);
+        FolderContentList mapFolders(QString parentFolderId);
         /// returns name->fileid map for a parent folder
-        FolderContentMap mapNonFolders(QString parentFolderId);
+        FolderContentList mapNonFolders(QString parentFolderId);
         /// returns name->fileid map for a parent folder using query parameter
-        FolderContentMap mapFolderContent(QString parentFolderId, QString q = "trashed = false");
+        FolderContentList mapFolderContent(QString parentFolderId, QString q = "trashed = false");
+        /// async map
+        void mapFolderContentAsync(std::function<void(std::unique_ptr<files::FileResourcesCollection>)> completed_callback,
+                                   std::function<void(std::unique_ptr<GoogleException>)> failed_callback,
+                                   QString parentId, QString q = "trashed = false");
+        /// process async result
+        static FolderContentList processMapFolderContent(const files::FileResourcesCollection &result);
         /// upload and share file to 'anyone', returns pair<fileId, webLink> of new shared file
         std::pair<QString, QString> shareFile(QString localFilePath, QString destFileName, QString parentFolderId = "", QString mimeType = "");
 #ifdef API_QT_AUTOTEST

@@ -467,9 +467,9 @@ QString  GdriveRoutes::appDataFileExists(QString name)
     return "";    
 };
 
-GdriveRoutes::FolderContentMap GdriveRoutes::mapFolderContent(QString parentId, QString q1 /*= "trashed = false"*/)
+GdriveRoutes::FolderContentList GdriveRoutes::mapFolderContent(QString parentId, QString q1 /*= "trashed = false"*/)
 {
-    FolderContentMap rv;
+    FolderContentList rv;
 
     gdrive::FileListArg arg;
     QString q = q1;
@@ -487,29 +487,48 @@ GdriveRoutes::FolderContentMap GdriveRoutes::mapFolderContent(QString parentId, 
     try
     {
         auto lst = getFiles()->list(arg);
-        auto& files = lst->files();
-        for (auto i = files.begin(); i != files.end(); i++)
-        {
-            QString id = i->id();
-            QString name = i->name();
-            rv.name2id[name] = id;
-            rv.id2name[id] = name;
-        }
+        rv = processMapFolderContent(*lst);
     }
     catch (GoogleException& e)
     {
         qWarning() << "GdriveRoutes::mapFolders Exception: " << e.what();
     }
     return rv;
+}
+
+void GdriveRoutes::mapFolderContentAsync(std::function<void (std::unique_ptr<files::FileResourcesCollection>)> completed_callback,
+                                         std::function<void (std::unique_ptr<GoogleException>)> failed_callback,
+                                         QString parentId, QString q)
+{
+    gdrive::FileListArg arg;
+    if (!parentId.isEmpty()) {
+        if (!q.isEmpty())
+            q += " and ";
+        q += QString("'%1' in parents").arg(parentId);
+    }
+    arg.setQ(q);
+    arg.setPageSize(200);
+
+    return getFiles()->list_AsyncCB(arg, completed_callback, failed_callback);
+}
+
+GdriveRoutes::FolderContentList GdriveRoutes::processMapFolderContent(const files::FileResourcesCollection &result)
+{
+    FolderContentList rv;
+    auto files = result.files();
+    for (auto i = files.begin(); i != files.end(); i++) {
+        rv.append(*i);
+    }
+    return rv;
 };
 
-GdriveRoutes::FolderContentMap GdriveRoutes::mapFolders(QString parentId)
+GdriveRoutes::FolderContentList GdriveRoutes::mapFolders(QString parentId)
 {
     QString q = QString("mimeType = 'application/vnd.google-apps.folder' and trashed = false");
     return mapFolderContent(parentId, q);    
 };
 
-GdriveRoutes::FolderContentMap GdriveRoutes::mapNonFolders(QString parentId)
+GdriveRoutes::FolderContentList GdriveRoutes::mapNonFolders(QString parentId)
 {
     QString q = QString("mimeType != 'application/vnd.google-apps.folder' and trashed = false");
     return mapFolderContent(parentId, q);
