@@ -11,20 +11,23 @@
 
 using namespace googleQt;
 
-QUrl GoogleWebAuth::getCodeAuthorizeUrl(std::shared_ptr<const ApiAppInfo> appInfo, QString scope)
+QUrl GoogleWebAuth::getCodeAuthorizeUrl(std::shared_ptr<const ApiAppInfo> appInfo, QString scope, const QString &redirectUrl)
 {
     QUrl url(QString("https://%1/%2").arg(GoogleHost::DEFAULT().getAuth()).arg("o/oauth2/auth"));
     QUrlQuery q;
     q.addQueryItem("response_type", "code");
     q.addQueryItem("client_id", appInfo->getKey());
-    q.addQueryItem("redirect_uri", "urn:ietf:wg:oauth:2.0:oob");
+    if (!redirectUrl.isEmpty())
+        q.addQueryItem("redirect_uri", redirectUrl);
+    else
+        q.addQueryItem("redirect_uri", "urn:ietf:wg:oauth:2.0:oob");
     q.addQueryItem("scope", scope);
     
     url.setQuery(q);
     return url;
 };
 
-QUrl GoogleWebAuth::getCodeAuthorizeUrl(std::shared_ptr<const ApiAppInfo> appInfo, const STRING_LIST& scopes)
+QUrl GoogleWebAuth::getCodeAuthorizeUrl(std::shared_ptr<const ApiAppInfo> appInfo, const STRING_LIST& scopes, const QString &redirectUrl)
 {
     QString scope_summary;
 
@@ -35,7 +38,7 @@ QUrl GoogleWebAuth::getCodeAuthorizeUrl(std::shared_ptr<const ApiAppInfo> appInf
         }
     scope_summary = scope_summary.left(scope_summary.length() - 1);
 
-    return getCodeAuthorizeUrl(appInfo, scope_summary);
+    return getCodeAuthorizeUrl(appInfo, scope_summary, redirectUrl);
 };
 
 bool GoogleWebAuth::updateToken(const QUrl& url, std::shared_ptr<ApiAuthInfo> auth, const QString& str)
@@ -95,7 +98,7 @@ bool GoogleWebAuth::updateToken(const QUrl& url, std::shared_ptr<ApiAuthInfo> au
 #endif
 }
 
-bool GoogleWebAuth::getTokenFromCode(std::shared_ptr<const ApiAppInfo> appInfo, QString code, std::shared_ptr<ApiAuthInfo> auth)
+bool GoogleWebAuth::getTokenFromCode(std::shared_ptr<const ApiAppInfo> appInfo, QString code, std::shared_ptr<ApiAuthInfo> auth, const QString &redirectUrl)
 {
     QUrl url(QString("https://%1/%2").arg(GoogleHost::DEFAULT().getAuth()).arg("o/oauth2/token"));
     QString str = QString("code=%1&client_id=%2&client_secret=%3&grant_type=%4&redirect_uri=%5")
@@ -103,7 +106,7 @@ bool GoogleWebAuth::getTokenFromCode(std::shared_ptr<const ApiAppInfo> appInfo, 
         .arg(appInfo->getKey())
         .arg(appInfo->getSecret())
         .arg("authorization_code")
-        .arg("urn:ietf:wg:oauth:2.0:oob");
+        .arg(!redirectUrl.isEmpty() ? redirectUrl : QString("urn:ietf:wg:oauth:2.0:oob"));
 
     return updateToken(url, auth, str);
 };

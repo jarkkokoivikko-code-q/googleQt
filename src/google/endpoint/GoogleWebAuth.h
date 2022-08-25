@@ -16,15 +16,15 @@ namespace googleQt{
             Google access and request for access token, which will be used in all
             API interactions.
         */
-        static QUrl getCodeAuthorizeUrl(std::shared_ptr<const ApiAppInfo> appInfo, QString scope);
+        static QUrl getCodeAuthorizeUrl(std::shared_ptr<const ApiAppInfo> appInfo, QString scope, const QString &redirectUrl = QString());
 
-        static QUrl getCodeAuthorizeUrl(std::shared_ptr<const ApiAppInfo> appInfo, const STRING_LIST& scopes);
+        static QUrl getCodeAuthorizeUrl(std::shared_ptr<const ApiAppInfo> appInfo, const STRING_LIST& scopes, const QString &redirectUrl = QString());
 
         /**
            getTokenFromCode - makes http call to Google to retrive
            access token by providing authorize code
          */
-        static bool getTokenFromCode(std::shared_ptr<const ApiAppInfo> appInfo, QString code, std::shared_ptr<ApiAuthInfo> auth);
+        static bool getTokenFromCode(std::shared_ptr<const ApiAppInfo> appInfo, QString code, std::shared_ptr<ApiAuthInfo> auth, const QString &redirectUrl = QString());
 
         /**
            refreshToken - makes http call to Google to retrive
