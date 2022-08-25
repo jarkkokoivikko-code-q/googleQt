@@ -91,10 +91,6 @@ bool GoogleWebAuth::updateToken(const QUrl& url, std::shared_ptr<ApiAuthInfo> au
                          loop.exit();
                      });
     loop.exec();
-    if(!ok)
-      {
-    throw GoogleException(errorInfo, status_code, "");
-      }        
     return rv;
 #endif
 }
