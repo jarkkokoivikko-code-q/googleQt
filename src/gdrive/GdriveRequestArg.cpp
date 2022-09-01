@@ -47,6 +47,7 @@ void FileListArg::build(const QString& link_path, QUrl& url)const
         .add("pageToken", m_pageToken)
         .add("q", m_q)
         .add("spaces", m_spaces);
+    ResponseFields2Builder(b);
 }
 
 /**
