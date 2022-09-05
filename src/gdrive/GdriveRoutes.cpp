@@ -330,28 +330,6 @@ std::pair<bool, int> GdriveRoutes::uploadFileUsingId(QString localFilePath,
     return rv;
 };
 
-void GdriveRoutes::uploadFileUsingIdAsync(std::function<void (std::unique_ptr<files::FileResource>)> completed_callback,
-                                          std::function<void (std::unique_ptr<GoogleException>)> failed_callback,
-                                          QIODevice* readFrom, QString destFileName, QString fileId, QString parentFolderId, QString mimeType)
-{
-    Q_ASSERT(!fileId.isEmpty());
-
-    gdrive::CreateFileArg arg(destFileName);
-    arg.setFileId(fileId);
-    files::CreateFileDetails& file_details = arg.fileDetailes();
-    if (!parentFolderId.isEmpty()) {
-        std::vector<QString> parent_folders;
-        parent_folders.push_back(parentFolderId);
-        file_details.setParents(parent_folders);
-    }
-    if (!mimeType.isEmpty())
-        file_details.setMimetype(mimeType);
-    else
-        arg.calcMimeType();
-
-    getFiles()->create_AsyncCB(arg, readFrom, completed_callback, failed_callback);
-};
-
 QString GdriveRoutes::uploadFile(QString localFilePath, QString destFileName, QString parentFolderId, QString mimeType)
 {
     QString fID = fileExists(destFileName, parentFolderId);
@@ -403,25 +381,6 @@ QString GdriveRoutes::uploadFileKeepExisting(QString localFilePath, QString dest
     }
     file_in.close();
     return rv;
-};
-
-void GdriveRoutes::uploadFileKeepExistingAsync(std::function<void (std::unique_ptr<files::FileResource>)> completed_callback,
-                                               std::function<void (std::unique_ptr<GoogleException>)> failed_callback,
-                                               QIODevice *readFrom, QString destFileName, QString parentFolderId, QString mimeType)
-{
-    gdrive::CreateFileArg arg(destFileName);
-    files::CreateFileDetails& file_details = arg.fileDetailes();
-    if (!parentFolderId.isEmpty()) {
-        std::vector<QString> parent_folders;
-        parent_folders.push_back(parentFolderId);
-        file_details.setParents(parent_folders);
-    }
-    if (!mimeType.isEmpty())
-        file_details.setMimetype(mimeType);
-    else
-        arg.calcMimeType();
-
-    getFiles()->create_AsyncCB(arg, readFrom, completed_callback, failed_callback);
 };
 
 QString GdriveRoutes::upgradeFile(QString localFilePath, QString destFileName, QString parentFolderId) 
@@ -534,22 +493,6 @@ GdriveRoutes::FolderContentList GdriveRoutes::mapFolderContent(QString parentId,
         qWarning() << "GdriveRoutes::mapFolders Exception: " << e.what();
     }
     return rv;
-}
-
-void GdriveRoutes::mapFolderContentAsync(std::function<void (std::unique_ptr<files::FileResourcesCollection>)> completed_callback,
-                                         std::function<void (std::unique_ptr<GoogleException>)> failed_callback,
-                                         QString parentId, QString q)
-{
-    gdrive::FileListArg arg;
-    if (!parentId.isEmpty()) {
-        if (!q.isEmpty())
-            q += " and ";
-        q += QString("'%1' in parents").arg(parentId);
-    }
-    arg.setQ(q);
-    arg.setPageSize(200);
-
-    return getFiles()->list_AsyncCB(arg, completed_callback, failed_callback);
 }
 
 GdriveRoutes::FolderContentList GdriveRoutes::processMapFolderContent(const files::FileResourcesCollection &result)
