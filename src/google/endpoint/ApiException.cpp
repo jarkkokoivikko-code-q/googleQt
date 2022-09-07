@@ -14,17 +14,11 @@ std::unique_ptr<GoogleException> GoogleException::create(const QByteArray& data,
     return std::unique_ptr<GoogleException>(new GoogleException(summary, status_code, message));
 };
 
-void GoogleException::build(std::string err)
+void GoogleException::build()
 {
     m_what = m_msg;
-    m_what += "\n";
-    if (!m_error_summary.empty())m_what += "SUMMARY:" + m_error_summary;
-    m_what += "\n";
-    if (!err.empty())
-    {
-        m_what += "ERROR:\n";
-        m_what += err;
-    }
+    if (!m_error_summary.empty())
+        m_what += ", error_summary=" + m_error_summary;
 }
 
 GoogleException* GoogleException::clone()const 
@@ -32,3 +26,16 @@ GoogleException* GoogleException::clone()const
     GoogleException* rv = new GoogleException(m_msg, m_status_code, m_error_summary);
     return rv;
 };
+
+QDebug operator<<(QDebug debug, const googleQt::GoogleException *error)
+{
+    QDebugStateSaver saver(debug);
+    if (!error) {
+        debug.nospace() << "GoogleException(nullptr)";
+        return debug;
+    }
+
+    debug.nospace() << "GoogleException(code=" << error->statusCode() << ", what=" << (error->what() ? error->what() : "\"\"") << ")";
+
+    return debug;
+}

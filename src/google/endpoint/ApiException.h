@@ -16,11 +16,13 @@ namespace googleQt{
     explicit GoogleException(const std::string& message, int code):
       m_msg(message),
       m_status_code(code)
-    {};        
+    {
+        build();
+    };
         
     explicit GoogleException(const std::string& message, int code, const std::string summary) :
         m_msg(message), m_status_code(code), m_error_summary(summary) {
-        build("");
+        build();
     };
 
     GoogleException* clone()const;
@@ -40,7 +42,7 @@ namespace googleQt{
 
 
   protected:
-      void build(std::string err);
+      void build();
 
   protected:
     std::string m_msg;
@@ -49,3 +51,5 @@ namespace googleQt{
     std::string m_what;
   };
 };
+
+QDebug operator<<(QDebug debug, const googleQt::GoogleException *error);
