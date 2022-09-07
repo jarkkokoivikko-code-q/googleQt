@@ -774,7 +774,6 @@ namespace googleQt{
                                                  }
                                          }break;
                                      case 401:
-                                     case 403:
                                          {
                                              m_last_response = reply->readAll();
                                              if (authErrorsLimit > 0)
