@@ -58,42 +58,31 @@ bool GoogleWebAuth::updateToken(const QUrl& url, std::shared_ptr<ApiAuthInfo> au
     return rv;
 #else
     QNetworkAccessManager mgr;
-    QEventLoop            loop;    
     QNetworkRequest req(url);
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     
-    bool ok = false, rv = false;
-    std::string errorInfo;
-    int status_code = 0;    
     QNetworkReply *reply = mgr.post(req, str.toUtf8());
-    QObject::connect(reply, &QNetworkReply::finished, [&]()
-                     {
-                         status_code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-                         switch(status_code)
-                             {
-                             case 200:
-                                 {
-                                     QByteArray data = reply->readAll();
-                                     if(!data.isEmpty())
-                                         {
-                                             QJsonDocument doc = QJsonDocument::fromJson(data);
-                                             QJsonObject js_in = doc.object();
-                                             rv = auth->updateToken(js_in);
-                                             ok = true;
-                                         }              
-                                 }break;
-                             default:
-                                 {
-                                     QByteArray data = reply->readAll();
-                                     QString tmp = QString("ERROR. Unexpected status %1").arg(status_code);
-                                     tmp += data;
-                                     errorInfo = tmp.toStdString();                
-                                 }break;
-                             }
-                         reply->deleteLater();
-                         loop.exit();
-                     });
-    loop.exec();
+    {
+        QEventLoop loop;
+        QObject::connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
+        loop.exec();
+    }
+
+    bool rv = false;
+    const QByteArray data = reply->readAll();
+    int status_code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    switch (status_code) {
+    case 200:
+        if (!data.isEmpty())
+            rv = auth->updateToken(QJsonDocument::fromJson(data).object());
+        break;
+
+    default:
+        qDebug() << "Failed to update token. Unexpected status" << status_code;
+        qDebug() << QString::fromUtf8(data).constData();
+        break;
+    }
+    reply->deleteLater();
     return rv;
 #endif
 }
