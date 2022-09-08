@@ -103,11 +103,12 @@ bool GoogleWebAuth::getTokenFromCode(std::shared_ptr<const ApiAppInfo> appInfo, 
 bool GoogleWebAuth::refreshToken(std::shared_ptr<const ApiAppInfo> appInfo, std::shared_ptr<ApiAuthInfo> auth)
 {
     QUrl url(QString("https://%1/%2").arg(GoogleHost::DEFAULT().getAuth()).arg("o/oauth2/token"));
-    QString str = QString("refresh_token=%1&client_id=%2&client_secret=%3&grant_type=%4")
+    QString str = QString("refresh_token=%1&client_id=%2&grant_type=%3")
         .arg(auth->getRefreshToken())
         .arg(appInfo->getKey())
-        .arg(appInfo->getSecret())
         .arg("refresh_token");
+    if (!appInfo->getSecret().isEmpty())
+        str.append(QString("&client_secret=%1").arg(appInfo->getSecret()));
 
     return updateToken(url, auth, str);
 };
