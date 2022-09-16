@@ -715,6 +715,10 @@ namespace googleQt{
             QNetworkRequest firstRequest(url);
             RESULT_FACTORY factory;
 
+            // Disable compression for http download as a workaround
+            // for poor download speeds. The downloaded files compress
+            // badly anyway and this seems to improve the speed by 30%.
+            firstRequest.setRawHeader("Accept-Encoding", "identity");
             QNetworkReply *firstReply = firstBuilder->makeRequest(firstRequest);
             if (!firstReply)
                 {
