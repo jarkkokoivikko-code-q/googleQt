@@ -22,7 +22,7 @@ namespace googleQt{
         QString getRefreshToken()const{return m_refreshToken;}
         QString getEmail()const{return m_email; }
         QString getUserId()const{return m_userId; }
-        int     getExpirationInSeconds()const{return m_expires_in;}
+        int     getExpirationInSeconds() const;
         QString getScope()const { return m_scope; }
 
     protected:
@@ -34,7 +34,6 @@ namespace googleQt{
         QString m_accessToken;
         QString m_refreshToken;
         QString m_type;
-        int     m_expires_in;
         QDateTime m_expire_time;
         QString m_scope;
         QString m_email;

@@ -25,7 +25,6 @@ void ApiAuthInfo::purge()
     m_accessToken.clear();
     m_refreshToken.clear();
     m_type.clear();
-    m_expires_in = 0;
     m_expire_time = QDateTime();
     m_scope.clear();
     m_email.clear();
@@ -41,7 +40,6 @@ bool ApiAuthInfo::readFromFile(QString path)
     m_refreshToken = js["refresh_token"].toString();
     m_type = js["token_type"].toString();
     m_expire_time = QDateTime::fromString(js["expire_time"].toString(), Qt::ISODate);
-    m_expires_in = m_expire_time.secsTo(QDateTime::currentDateTime());
     m_scope = js["scope"].toString();
     m_email = js["email"].toString();
     m_userId = js["user_id"].toString();
@@ -75,6 +73,15 @@ bool ApiAuthInfo::save()
     return !m_token_file.isEmpty() ? storeToFile(m_token_file) : false;
 };
 
+int ApiAuthInfo::getExpirationInSeconds() const
+{
+    if (!m_expire_time.isValid())
+        return -1;
+
+    const QDateTime currentDateTime = QDateTime::currentDateTime();
+    return qMax(currentDateTime.secsTo(m_expire_time), 0);
+};
+
 bool ApiAuthInfo::updateToken(const QJsonObject& js_in)
 {
     m_accessToken = js_in["access_token"].toString();
@@ -84,8 +91,7 @@ bool ApiAuthInfo::updateToken(const QJsonObject& js_in)
             m_refreshToken = refreshToken;
         }
     m_type = js_in["token_type"].toString();
-    m_expires_in = js_in["expires_in"].toInt();
-    m_expire_time = QDateTime::currentDateTime().addSecs(m_expires_in);
+    m_expire_time = QDateTime::currentDateTime().addSecs(js_in["expires_in"].toInt());
     m_scope = js_in["scope"].toString();
     //do don't update email - it will be empty on refresh
     //email/userid is something that is setup on client side
