@@ -152,6 +152,35 @@ void GoogleWebAuth::updateUserEmail(std::shared_ptr<ApiAuthInfo> auth)
     reply->deleteLater();
 };
 
+void GoogleWebAuth::revoke(std::shared_ptr<ApiAuthInfo> auth)
+{
+    if (auth->getAccessToken().isEmpty())
+        return;
+
+    QUrl url(u"https://accounts.google.com/o/oauth2/revoke?token=%1"_qs.arg(auth->getAccessToken()));
+
+    QNetworkAccessManager mgr;
+    QNetworkRequest req(url);
+    QNetworkReply *reply = mgr.get(req);
+    {
+        QEventLoop loop;
+        QObject::connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
+        loop.exec();
+    }
+
+    int status_code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    switch (status_code) {
+    case 200:
+        qDebug() << "Access revoked successfully.";
+        break;
+
+    default:
+        qDebug() << "Failed to revoke token. Unexpected status" << status_code;
+        break;
+    }
+    reply->deleteLater();
+};
+
 #define DEFINE_SCOPE(N, L) QString GoogleWebAuth::N(){return L;};
 
 DEFINE_SCOPE(authScope_userinfo_email,  "https://www.googleapis.com/auth/userinfo.email");

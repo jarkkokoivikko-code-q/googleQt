@@ -39,6 +39,11 @@ namespace googleQt{
         static void updateUserEmail(std::shared_ptr<ApiAuthInfo> auth);
 
         /**
+           revoke - revokes access token
+         */
+        static void revoke(std::shared_ptr<ApiAuthInfo> auth);
+
+        /**
         * Get user email.
         */
         static QString authScope_userinfo_email();
