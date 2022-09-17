@@ -79,7 +79,6 @@ bool GoogleWebAuth::updateToken(const QUrl& url, std::shared_ptr<ApiAuthInfo> au
 
     default:
         qDebug() << "Failed to update token. Unexpected status" << status_code;
-        qDebug() << QString::fromUtf8(data).constData();
         break;
     }
     reply->deleteLater();
