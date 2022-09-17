@@ -13,7 +13,7 @@ QString ApiClient::getToken()const
     return m_auth->getAccessToken();
 }
 
-int ApiClient::getAccessScope()const
+QString ApiClient::getScope()const
 {
     return m_auth->getScope();
 };

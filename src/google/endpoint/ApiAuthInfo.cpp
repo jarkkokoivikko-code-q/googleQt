@@ -13,7 +13,8 @@ ApiAuthInfo::ApiAuthInfo()
 #endif //API_QT_AUTOTEST
 };
 
-ApiAuthInfo::ApiAuthInfo(QString token_file, int scope):m_token_file(token_file), m_token_scope(scope)
+ApiAuthInfo::ApiAuthInfo(QString token_file, int scope) :
+    m_token_file(token_file)
 {
 };
 
@@ -26,7 +27,9 @@ void ApiAuthInfo::purge()
     m_type.clear();
     m_expires_in = 0;
     m_expire_time = QDateTime();
-    m_token_scope = 0;
+    m_scope.clear();
+    m_email.clear();
+    m_userId.clear();
 };
 
 bool ApiAuthInfo::readFromFile(QString path)
@@ -37,9 +40,11 @@ bool ApiAuthInfo::readFromFile(QString path)
     m_accessToken = js["access_token"].toString();
     m_refreshToken = js["refresh_token"].toString();
     m_type = js["token_type"].toString();
-    m_expires_in = js["expires_in"].toInt();
     m_expire_time = QDateTime::fromString(js["expire_time"].toString(), Qt::ISODate);
-    m_token_scope = js["scope"].toInt();
+    m_expires_in = m_expire_time.secsTo(QDateTime::currentDateTime());
+    m_scope = js["scope"].toString();
+    m_email = js["email"].toString();
+    m_userId = js["user_id"].toString();
     return true;
 };
 
@@ -49,10 +54,11 @@ bool ApiAuthInfo::storeToFile(QString path)const
     js["access_token"] = m_accessToken;
     js["refresh_token"] =  m_refreshToken;
     js["token_type"] = m_type;
-    js["expires_in"] = m_expires_in;
     js["expire_time"] = m_expire_time.toString(Qt::ISODate);
-    js["scope"] = m_token_scope;
-    
+    js["scope"] = m_scope;
+    js["email"] = m_email;
+    js["user_id"] = m_userId;
+
     if(!storeJsonToFile(path, js))
         return false;
     return true;
@@ -61,12 +67,12 @@ bool ApiAuthInfo::storeToFile(QString path)const
 
 bool ApiAuthInfo::reload()
 {
-    if(!m_token_file.isEmpty())
-        {
-            return readFromFile(m_token_file);
-        }
-    
-    return false;
+    return !m_token_file.isEmpty() ? readFromFile(m_token_file) : false;
+};
+
+bool ApiAuthInfo::save()
+{
+    return !m_token_file.isEmpty() ? storeToFile(m_token_file) : false;
 };
 
 bool ApiAuthInfo::updateToken(const QJsonObject& js_in)
@@ -78,15 +84,13 @@ bool ApiAuthInfo::updateToken(const QJsonObject& js_in)
             m_refreshToken = refreshToken;
         }
     m_type = js_in["token_type"].toString();
-    m_expires_in = js_in["expires_in"].toString().toInt();
+    m_expires_in = js_in["expires_in"].toInt();
     m_expire_time = QDateTime::currentDateTime().addSecs(m_expires_in);
+    m_scope = js_in["scope"].toString();
     //do don't update email - it will be empty on refresh
     //email/userid is something that is setup on client side
-    
-    if(!m_token_file.isEmpty())
-        {
-            return storeToFile(m_token_file);
-        }
+
+    save();
     
     return true;
 };

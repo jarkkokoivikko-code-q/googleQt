@@ -12,15 +12,18 @@ namespace googleQt{
         virtual ~ApiAuthInfo(){};
         
         void purge();
-        virtual bool reload();
-        virtual bool updateToken(const QJsonObject& js_in);
-        void setEmail(QString email){ m_email = email; }        
-        
+        bool reload();
+        bool save();
+        bool updateToken(const QJsonObject& js_in);
+        void setEmail(QString email){ m_email = email; }
+        void setUserId(QString id){ m_userId = id; }
+
         QString getAccessToken()const {return m_accessToken;}
         QString getRefreshToken()const{return m_refreshToken;}
         QString getEmail()const{return m_email; }
+        QString getUserId()const{return m_userId; }
         int     getExpirationInSeconds()const{return m_expires_in;}
-        int     getScope()const { return m_token_scope; }
+        QString getScope()const { return m_scope; }
 
     protected:
         virtual bool readFromFile(QString path);
@@ -33,7 +36,8 @@ namespace googleQt{
         QString m_type;
         int     m_expires_in;
         QDateTime m_expire_time;
+        QString m_scope;
         QString m_email;
-        int     m_token_scope;
+        QString m_userId;
     };
 }//dropboxQt

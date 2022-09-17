@@ -19,7 +19,7 @@ namespace googleQt{
         virtual void setUserId(QString email);
         QString userAgent()const{return m_userAgent;}
         void setUserAgent(QString s){m_userAgent = s;}
-        int     getAccessScope()const;
+        QString getScope()const;
         virtual bool refreshToken() = 0;        
         virtual ApiEndpoint* endpoint() = 0;
         const std::shared_ptr<ApiAppInfo> &app() const;

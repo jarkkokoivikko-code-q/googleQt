@@ -96,7 +96,11 @@ bool GoogleWebAuth::getTokenFromCode(std::shared_ptr<const ApiAppInfo> appInfo, 
         .arg("authorization_code")
         .arg(!redirectUrl.isEmpty() ? redirectUrl : QString("urn:ietf:wg:oauth:2.0:oob"));
 
-    return updateToken(url, auth, str);
+    bool result = updateToken(url, auth, str);
+    if (result) {
+        updateUserEmail(auth);
+    }
+    return result;
 };
 
 bool GoogleWebAuth::refreshToken(std::shared_ptr<const ApiAppInfo> appInfo, std::shared_ptr<ApiAuthInfo> auth)
@@ -112,8 +116,45 @@ bool GoogleWebAuth::refreshToken(std::shared_ptr<const ApiAppInfo> appInfo, std:
     return updateToken(url, auth, str);
 };
 
+void GoogleWebAuth::updateUserEmail(std::shared_ptr<ApiAuthInfo> auth)
+{
+    QUrl url(u"https://www.googleapis.com/oauth2/v2/userinfo"_qs);
+
+    QNetworkAccessManager mgr;
+    QNetworkRequest req(url);
+    QString bearer = QString("Bearer %1").arg(auth->getAccessToken());
+    req.setRawHeader("Authorization", bearer.toUtf8());
+
+    QNetworkReply *reply = mgr.get(req);
+    {
+        QEventLoop loop;
+        QObject::connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
+        loop.exec();
+    }
+
+    int status_code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    switch (status_code) {
+    case 200: {
+        const QByteArray data = reply->readAll();
+        if (!data.isEmpty()) {
+            QJsonObject userinfo = QJsonDocument::fromJson(data).object();
+            auth->setEmail(userinfo["email"].toString());
+            auth->setUserId(userinfo["id"].toString());
+            auth->save();
+        }
+        break;
+    }
+
+    default:
+        qDebug() << "Failed to update user email. Unexpected status" << status_code;
+        break;
+    }
+    reply->deleteLater();
+};
+
 #define DEFINE_SCOPE(N, L) QString GoogleWebAuth::N(){return L;};
 
+DEFINE_SCOPE(authScope_userinfo_email,  "https://www.googleapis.com/auth/userinfo.email");
 DEFINE_SCOPE(authScope_gmail_labels,    "https://www.googleapis.com/auth/gmail.labels");
 DEFINE_SCOPE(authScope_gmail_readonly,  "https://www.googleapis.com/auth/gmail.readonly");
 DEFINE_SCOPE(authScope_gmail_compose,   "https://www.googleapis.com/auth/gmail.compose");

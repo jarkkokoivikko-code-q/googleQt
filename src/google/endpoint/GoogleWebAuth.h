@@ -31,7 +31,18 @@ namespace googleQt{
            access token by providing refresh token
          */
         static bool refreshToken(std::shared_ptr<const ApiAppInfo> appInfo, std::shared_ptr<ApiAuthInfo> auth);
-        
+
+        /**
+           updateUserEmail - makes http call to Google to retrive
+           user email
+         */
+        static void updateUserEmail(std::shared_ptr<ApiAuthInfo> auth);
+
+        /**
+        * Get user email.
+        */
+        static QString authScope_userinfo_email();
+
         /**
         * Create, read, update, and delete labels only.
         */
