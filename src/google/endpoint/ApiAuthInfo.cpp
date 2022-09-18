@@ -13,7 +13,7 @@ ApiAuthInfo::ApiAuthInfo()
 #endif //API_QT_AUTOTEST
 };
 
-ApiAuthInfo::ApiAuthInfo(QString token_file, int scope) :
+ApiAuthInfo::ApiAuthInfo(QString token_file) :
     m_token_file(token_file)
 {
 };
@@ -34,8 +34,14 @@ void ApiAuthInfo::purge()
 bool ApiAuthInfo::readFromFile(QString path)
 {
     QJsonObject js;
-    if(!loadJsonFromFile(path, js))
+    if (!loadJsonFromFile(path, js))
         return false;
+    loadFromJson(js);
+    return true;
+};
+
+void ApiAuthInfo::loadFromJson(const QJsonObject &js)
+{
     m_accessToken = js["access_token"].toString();
     m_refreshToken = js["refresh_token"].toString();
     m_type = js["token_type"].toString();
@@ -43,10 +49,14 @@ bool ApiAuthInfo::readFromFile(QString path)
     m_scope = js["scope"].toString();
     m_email = js["email"].toString();
     m_userId = js["user_id"].toString();
-    return true;
 };
 
 bool ApiAuthInfo::storeToFile(QString path)const
+{
+    return storeJsonToFile(path, saveToJson());
+};
+
+QJsonObject ApiAuthInfo::saveToJson() const
 {
     QJsonObject js;
     js["access_token"] = m_accessToken;
@@ -56,11 +66,7 @@ bool ApiAuthInfo::storeToFile(QString path)const
     js["scope"] = m_scope;
     js["email"] = m_email;
     js["user_id"] = m_userId;
-
-    if(!storeJsonToFile(path, js))
-        return false;
-    return true;
-
+    return js;
 };
 
 bool ApiAuthInfo::reload()

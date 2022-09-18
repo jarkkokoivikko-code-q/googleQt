@@ -35,7 +35,9 @@ namespace googleQt {
     template<class T> using qstring_hash_map = std::unordered_map<QString, T, qs_hash>;
 
     bool loadJsonFromFile(QString path, QJsonObject& js);
+    bool loadJsonFromBuffer(const QByteArray &buffer, QJsonObject& js);
     bool storeJsonToFile(QString path, const QJsonObject js);
+    QByteArray storeJsonToBuffer(const QJsonObject &js);
     bool isConnectedToNetwork();
     QString makeValidFileName(QString fileName);
 

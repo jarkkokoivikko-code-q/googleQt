@@ -14,8 +14,13 @@ bool googleQt::loadJsonFromFile(QString path, QJsonObject& js)
     if (!jf.open(QFile::ReadOnly)) {
         return false;
     }
+    return loadJsonFromBuffer(jf.readAll(), js);
+};
+
+bool googleQt::loadJsonFromBuffer(const QByteArray &buffer, QJsonObject &js)
+{
     QJsonParseError  err;
-    QJsonDocument jd = QJsonDocument().fromJson(jf.readAll(), &err);
+    QJsonDocument jd = QJsonDocument().fromJson(buffer, &err);
     if (err.error == QJsonParseError::NoError) {
         js = jd.object();
         return true;
@@ -33,10 +38,15 @@ bool googleQt::storeJsonToFile(QString path, const QJsonObject js)
         return false;
     }
 
-    QJsonDocument jd(js);
-    jf.write(jd.toJson());
+    jf.write(storeJsonToBuffer(js));
     jf.close();
     return true;
+};
+
+QByteArray googleQt::storeJsonToBuffer(const QJsonObject &js)
+{
+    QJsonDocument jd(js);
+    return jd.toJson();
 };
 
 bool googleQt::isConnectedToNetwork()

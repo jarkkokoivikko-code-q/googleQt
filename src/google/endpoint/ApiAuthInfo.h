@@ -8,7 +8,7 @@ namespace googleQt{
         friend class GoogleWebAuth;
     public:
         ApiAuthInfo();
-        ApiAuthInfo(QString token_file, int scope = 0);
+        ApiAuthInfo(QString token_file);
         virtual ~ApiAuthInfo(){};
         
         void purge();
@@ -27,7 +27,9 @@ namespace googleQt{
 
     protected:
         virtual bool readFromFile(QString path);
-        virtual bool storeToFile(QString path)const;
+        void loadFromJson(const QJsonObject &js);
+        virtual bool storeToFile(QString path) const;
+        QJsonObject saveToJson() const;
 
     protected:
         QString m_token_file;
