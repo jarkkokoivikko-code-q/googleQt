@@ -758,6 +758,10 @@ namespace googleQt{
                                                             int authErrorsLimit)
                              {
                                  int status_code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+                                 const QNetworkReply::NetworkError error = reply->error();
+                                 if (error == QNetworkReply::NetworkError::OperationCanceledError) {
+                                     status_code = 499;
+                                 }
                                  switch (status_code)
                                      {
                                      case 200:
@@ -841,11 +845,10 @@ namespace googleQt{
             QObject::connect(firstReply,
                              &QNetworkReply::finished,
                              std::bind(*(finishedRequest.get()),
-                                       std::move(firstBuilder),
+                                       firstBuilder,
                                        firstRequest,
                                        firstReply,
                                  TIMES_TO_REFRESH_TOKEN_BEFORE_GIVEUP));
-                                       
         }//runRequest
     };    
 };

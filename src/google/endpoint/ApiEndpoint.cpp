@@ -73,13 +73,11 @@ void ApiEndpoint::cancelAll()
         int i = 1;
         abortRequests();
         for (; i < 5; i++) {
-            QEventLoop* loop = new QEventLoop;
-            QTimer::singleShot(200, [=]() {
-                loop->exit();
-            });
-            loop->exec();
-            delete loop; 
-            loop = nullptr;
+            {
+                std::unique_ptr<QEventLoop> loop(new QEventLoop);
+                QTimer::singleShot(200, loop.get(), &QEventLoop::quit);
+                loop->exec();
+            }
             if (m_replies_in_progress.empty())
                 break;
 
