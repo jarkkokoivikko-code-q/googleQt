@@ -183,8 +183,8 @@ googleQt::mail_cache::GMailSQLiteStorage* GoogleClient::gmail_storage()
 
 bool GoogleClient::refreshToken()
 {
-    bool rv = GoogleWebAuth::refreshToken(m_app, m_auth);
-    return rv;
+    int status_code = GoogleWebAuth::refreshToken(m_app, m_auth);
+    return status_code == 200;
 };
 
 void GoogleClient::setNetworkProxy(const QNetworkProxy& proxy)

@@ -41,7 +41,7 @@ QUrl GoogleWebAuth::getCodeAuthorizeUrl(std::shared_ptr<const ApiAppInfo> appInf
     return getCodeAuthorizeUrl(appInfo, scope_summary, redirectUrl);
 };
 
-bool GoogleWebAuth::updateToken(const QUrl& url, std::shared_ptr<ApiAuthInfo> auth, const QString& str)
+int GoogleWebAuth::updateToken(const QUrl& url, std::shared_ptr<ApiAuthInfo> auth, const QString& str)
 {
 #ifdef API_QT_AUTOTEST
     Q_UNUSED(url);
@@ -55,7 +55,7 @@ bool GoogleWebAuth::updateToken(const QUrl& url, std::shared_ptr<ApiAuthInfo> au
     js["expire_time"]   = QDateTime::currentDateTime().addSecs(3599).toString(Qt::ISODate);
 
     bool rv = auth->updateToken(js);
-    return rv;
+    return 200;
 #else
     QNetworkAccessManager mgr;
     QNetworkRequest req(url);
@@ -68,13 +68,12 @@ bool GoogleWebAuth::updateToken(const QUrl& url, std::shared_ptr<ApiAuthInfo> au
         loop.exec();
     }
 
-    bool rv = false;
     const QByteArray data = reply->readAll();
     int status_code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     switch (status_code) {
     case 200:
         if (!data.isEmpty())
-            rv = auth->updateToken(QJsonDocument::fromJson(data).object());
+            auth->updateToken(QJsonDocument::fromJson(data).object());
         break;
 
     default:
@@ -82,11 +81,11 @@ bool GoogleWebAuth::updateToken(const QUrl& url, std::shared_ptr<ApiAuthInfo> au
         break;
     }
     reply->deleteLater();
-    return rv;
+    return status_code;
 #endif
 }
 
-bool GoogleWebAuth::getTokenFromCode(std::shared_ptr<const ApiAppInfo> appInfo, QString code, std::shared_ptr<ApiAuthInfo> auth, const QString &redirectUrl)
+int GoogleWebAuth::getTokenFromCode(std::shared_ptr<const ApiAppInfo> appInfo, QString code, std::shared_ptr<ApiAuthInfo> auth, const QString &redirectUrl)
 {
     QUrl url(QString("https://%1/%2").arg(GoogleHost::DEFAULT().getAuth()).arg("o/oauth2/token"));
     QString str = QString("code=%1&client_id=%2&client_secret=%3&grant_type=%4&redirect_uri=%5")
@@ -96,14 +95,14 @@ bool GoogleWebAuth::getTokenFromCode(std::shared_ptr<const ApiAppInfo> appInfo, 
         .arg("authorization_code")
         .arg(!redirectUrl.isEmpty() ? redirectUrl : QString("urn:ietf:wg:oauth:2.0:oob"));
 
-    bool result = updateToken(url, auth, str);
-    if (result) {
+    int status_code = updateToken(url, auth, str);
+    if (status_code == 200) {
         updateUserEmail(auth);
     }
-    return result;
+    return status_code;
 };
 
-bool GoogleWebAuth::refreshToken(std::shared_ptr<const ApiAppInfo> appInfo, std::shared_ptr<ApiAuthInfo> auth)
+int GoogleWebAuth::refreshToken(std::shared_ptr<const ApiAppInfo> appInfo, std::shared_ptr<ApiAuthInfo> auth)
 {
     QUrl url(QString("https://%1/%2").arg(GoogleHost::DEFAULT().getAuth()).arg("o/oauth2/token"));
     QString str = QString("refresh_token=%1&client_id=%2&grant_type=%3")

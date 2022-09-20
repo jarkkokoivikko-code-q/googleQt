@@ -24,13 +24,13 @@ namespace googleQt{
            getTokenFromCode - makes http call to Google to retrive
            access token by providing authorize code
          */
-        static bool getTokenFromCode(std::shared_ptr<const ApiAppInfo> appInfo, QString code, std::shared_ptr<ApiAuthInfo> auth, const QString &redirectUrl = QString());
+        static int getTokenFromCode(std::shared_ptr<const ApiAppInfo> appInfo, QString code, std::shared_ptr<ApiAuthInfo> auth, const QString &redirectUrl = QString());
 
         /**
            refreshToken - makes http call to Google to retrive
            access token by providing refresh token
          */
-        static bool refreshToken(std::shared_ptr<const ApiAppInfo> appInfo, std::shared_ptr<ApiAuthInfo> auth);
+        static int refreshToken(std::shared_ptr<const ApiAppInfo> appInfo, std::shared_ptr<ApiAuthInfo> auth);
 
         /**
            updateUserEmail - makes http call to Google to retrive
@@ -119,6 +119,6 @@ namespace googleQt{
         static QString authScope_contacts();
         */
     protected:
-        static bool updateToken(const QUrl& url, std::shared_ptr<ApiAuthInfo> auth, const QString& str);
+        static int updateToken(const QUrl& url, std::shared_ptr<ApiAuthInfo> auth, const QString& str);
     };
 };

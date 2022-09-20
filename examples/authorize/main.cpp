@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
                     return 0;
                 }
 
-                if(!GoogleWebAuth::refreshToken(appInfo, authInfo))
+                if(GoogleWebAuth::refreshToken(appInfo, authInfo) != 200)
                     {
                         std::cout << "Error, failed to store access token to file: " << argAuthFileOutput.toStdString() << std::endl;
                     }
