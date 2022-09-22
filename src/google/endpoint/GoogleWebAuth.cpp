@@ -65,7 +65,7 @@ int GoogleWebAuth::updateToken(const QUrl& url, std::shared_ptr<ApiAuthInfo> aut
     {
         QEventLoop loop;
         QObject::connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
-        loop.exec();
+        loop.exec(QEventLoop::ExcludeUserInputEvents);
     }
 
     const QByteArray data = reply->readAll();
@@ -128,7 +128,7 @@ void GoogleWebAuth::updateUserEmail(std::shared_ptr<ApiAuthInfo> auth)
     {
         QEventLoop loop;
         QObject::connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
-        loop.exec();
+        loop.exec(QEventLoop::ExcludeUserInputEvents);
     }
 
     int status_code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -164,7 +164,7 @@ void GoogleWebAuth::revoke(std::shared_ptr<ApiAuthInfo> auth)
     {
         QEventLoop loop;
         QObject::connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
-        loop.exec();
+        loop.exec(QEventLoop::ExcludeUserInputEvents);
     }
 
     int status_code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
