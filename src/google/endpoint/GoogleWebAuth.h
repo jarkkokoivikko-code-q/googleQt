@@ -94,6 +94,11 @@ namespace googleQt{
         static QString authScope_gdrive();
 
         /**
+        * GDrive file access
+        */
+        static QString authScope_gdrive_file();
+
+        /**
         * GDrive readonly access
         */
         static QString authScope_gdrive_readonly();

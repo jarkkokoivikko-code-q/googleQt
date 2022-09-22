@@ -192,6 +192,7 @@ DEFINE_SCOPE(authScope_full_access,     "https://mail.google.com/");
 DEFINE_SCOPE(authScope_tasks,           "https://www.googleapis.com/auth/tasks");
 DEFINE_SCOPE(authScope_tasks_readonly,  "https://www.googleapis.com/auth/tasks.readonly");
 DEFINE_SCOPE(authScope_gdrive,          "https://www.googleapis.com/auth/drive");
+DEFINE_SCOPE(authScope_gdrive_file,     "https://www.googleapis.com/auth/drive.file");
 DEFINE_SCOPE(authScope_gdrive_readonly, "https://www.googleapis.com/auth/drive.readonly");
 DEFINE_SCOPE(authScope_gdrive_appdata,  "https://www.googleapis.com/auth/drive.appdata");
 DEFINE_SCOPE(authScope_contacts_modify,  "https://www.google.com/m8/feeds");
