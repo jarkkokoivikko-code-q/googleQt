@@ -21,10 +21,20 @@ namespace googleQt{
         static QUrl getCodeAuthorizeUrl(std::shared_ptr<const ApiAppInfo> appInfo, const STRING_LIST& scopes, const QString &redirectUrl = QString());
 
         /**
+           buildGetTokenRequest - builds request for new token http (POST)
+         */
+        static QNetworkRequest buildGetTokenRequest(QByteArray &outData, std::shared_ptr<const ApiAppInfo> appInfo, QString code, std::shared_ptr<ApiAuthInfo> auth, const QString &redirectUrl = QString());
+
+        /**
            getTokenFromCode - makes http call to Google to retrive
            access token by providing authorize code
          */
         static int getTokenFromCode(std::shared_ptr<const ApiAppInfo> appInfo, QString code, std::shared_ptr<ApiAuthInfo> auth, const QString &redirectUrl = QString());
+
+        /**
+           buildRefreshTokenRequest - builds request for refresh token http (POST)
+         */
+        static QNetworkRequest buildRefreshTokenRequest(QByteArray &outData, std::shared_ptr<const ApiAppInfo> appInfo, std::shared_ptr<ApiAuthInfo> auth);
 
         /**
            refreshToken - makes http call to Google to retrive
@@ -33,10 +43,21 @@ namespace googleQt{
         static int refreshToken(std::shared_ptr<const ApiAppInfo> appInfo, std::shared_ptr<ApiAuthInfo> auth);
 
         /**
+           buildUserEmailRequest - builds a http request to Google to retrive
+           user email
+         */
+        static QNetworkRequest buildUserEmailRequest(std::shared_ptr<ApiAuthInfo> auth);
+
+        /**
            updateUserEmail - makes http call to Google to retrive
            user email
          */
         static void updateUserEmail(std::shared_ptr<ApiAuthInfo> auth);
+
+        /**
+           revoke - revokes access token
+         */
+        static QNetworkRequest buildRevokeRequest(std::shared_ptr<ApiAuthInfo> auth);
 
         /**
            revoke - revokes access token
@@ -124,6 +145,6 @@ namespace googleQt{
         static QString authScope_contacts();
         */
     protected:
-        static int updateToken(const QUrl& url, std::shared_ptr<ApiAuthInfo> auth, const QString& str);
+        static int updateToken(const QNetworkRequest& req, std::shared_ptr<ApiAuthInfo> auth, const QByteArray& reqData);
     };
 };

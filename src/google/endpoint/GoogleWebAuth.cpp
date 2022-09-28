@@ -41,7 +41,7 @@ QUrl GoogleWebAuth::getCodeAuthorizeUrl(std::shared_ptr<const ApiAppInfo> appInf
     return getCodeAuthorizeUrl(appInfo, scope_summary, redirectUrl);
 };
 
-int GoogleWebAuth::updateToken(const QUrl& url, std::shared_ptr<ApiAuthInfo> auth, const QString& str)
+int GoogleWebAuth::updateToken(const QNetworkRequest& req, std::shared_ptr<ApiAuthInfo> auth, const QByteArray& reqData)
 {
 #ifdef API_QT_AUTOTEST
     Q_UNUSED(url);
@@ -58,10 +58,7 @@ int GoogleWebAuth::updateToken(const QUrl& url, std::shared_ptr<ApiAuthInfo> aut
     return 200;
 #else
     QNetworkAccessManager mgr;
-    QNetworkRequest req(url);
-    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-    
-    QNetworkReply *reply = mgr.post(req, str.toUtf8());
+    QNetworkReply *reply = mgr.post(req, reqData);
     {
         QEventLoop loop;
         QObject::connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
@@ -85,7 +82,7 @@ int GoogleWebAuth::updateToken(const QUrl& url, std::shared_ptr<ApiAuthInfo> aut
 #endif
 }
 
-int GoogleWebAuth::getTokenFromCode(std::shared_ptr<const ApiAppInfo> appInfo, QString code, std::shared_ptr<ApiAuthInfo> auth, const QString &redirectUrl)
+QNetworkRequest GoogleWebAuth::buildGetTokenRequest(QByteArray &outData, std::shared_ptr<const ApiAppInfo> appInfo, QString code, std::shared_ptr<ApiAuthInfo> auth, const QString &redirectUrl)
 {
     QUrl url(QString("https://%1/%2").arg(GoogleHost::DEFAULT().getAuth()).arg("o/oauth2/token"));
     QString str = QString("code=%1&client_id=%2&client_secret=%3&grant_type=%4&redirect_uri=%5")
@@ -94,15 +91,27 @@ int GoogleWebAuth::getTokenFromCode(std::shared_ptr<const ApiAppInfo> appInfo, Q
         .arg(appInfo->getSecret())
         .arg("authorization_code")
         .arg(!redirectUrl.isEmpty() ? redirectUrl : QString("urn:ietf:wg:oauth:2.0:oob"));
+    outData = str.toUtf8();
 
-    int status_code = updateToken(url, auth, str);
+    QNetworkRequest req(url);
+    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+
+    return req;
+};
+
+int GoogleWebAuth::getTokenFromCode(std::shared_ptr<const ApiAppInfo> appInfo, QString code, std::shared_ptr<ApiAuthInfo> auth, const QString &redirectUrl)
+{
+    QByteArray data;
+    QNetworkRequest req = buildGetTokenRequest(data, appInfo, code, auth, redirectUrl);
+
+    int status_code = updateToken(req, auth, data);
     if (status_code == 200) {
         updateUserEmail(auth);
     }
     return status_code;
 };
 
-int GoogleWebAuth::refreshToken(std::shared_ptr<const ApiAppInfo> appInfo, std::shared_ptr<ApiAuthInfo> auth)
+QNetworkRequest GoogleWebAuth::buildRefreshTokenRequest(QByteArray &outData, std::shared_ptr<const ApiAppInfo> appInfo, std::shared_ptr<ApiAuthInfo> auth)
 {
     QUrl url(QString("https://%1/%2").arg(GoogleHost::DEFAULT().getAuth()).arg("o/oauth2/token"));
     QString str = QString("refresh_token=%1&client_id=%2&grant_type=%3")
@@ -111,18 +120,35 @@ int GoogleWebAuth::refreshToken(std::shared_ptr<const ApiAppInfo> appInfo, std::
         .arg("refresh_token");
     if (!appInfo->getSecret().isEmpty())
         str.append(QString("&client_secret=%1").arg(appInfo->getSecret()));
+    outData = str.toUtf8();
 
-    return updateToken(url, auth, str);
+    QNetworkRequest req(url);
+    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+
+    return req;
+};
+
+int GoogleWebAuth::refreshToken(std::shared_ptr<const ApiAppInfo> appInfo, std::shared_ptr<ApiAuthInfo> auth)
+{
+    QByteArray data;
+    QNetworkRequest req = buildRefreshTokenRequest(data, appInfo, auth);
+
+    return updateToken(req, auth, data);
+};
+
+QNetworkRequest GoogleWebAuth::buildUserEmailRequest(std::shared_ptr<ApiAuthInfo> auth)
+{
+    QUrl url(u"https://www.googleapis.com/oauth2/v2/userinfo"_qs);
+    QNetworkRequest req(url);
+    QString bearer = QString("Bearer %1").arg(auth->getAccessToken());
+    req.setRawHeader("Authorization", bearer.toUtf8());
+    return req;
 };
 
 void GoogleWebAuth::updateUserEmail(std::shared_ptr<ApiAuthInfo> auth)
 {
-    QUrl url(u"https://www.googleapis.com/oauth2/v2/userinfo"_qs);
-
+    QNetworkRequest req = buildUserEmailRequest(auth);
     QNetworkAccessManager mgr;
-    QNetworkRequest req(url);
-    QString bearer = QString("Bearer %1").arg(auth->getAccessToken());
-    req.setRawHeader("Authorization", bearer.toUtf8());
 
     QNetworkReply *reply = mgr.get(req);
     {
@@ -151,15 +177,20 @@ void GoogleWebAuth::updateUserEmail(std::shared_ptr<ApiAuthInfo> auth)
     reply->deleteLater();
 };
 
+QNetworkRequest GoogleWebAuth::buildRevokeRequest(std::shared_ptr<ApiAuthInfo> auth)
+{
+    QUrl url(u"https://accounts.google.com/o/oauth2/revoke?token=%1"_qs.arg(auth->getAccessToken()));
+    QNetworkRequest req(url);
+    return req;
+};
+
 void GoogleWebAuth::revoke(std::shared_ptr<ApiAuthInfo> auth)
 {
     if (auth->getAccessToken().isEmpty())
         return;
 
-    QUrl url(u"https://accounts.google.com/o/oauth2/revoke?token=%1"_qs.arg(auth->getAccessToken()));
-
     QNetworkAccessManager mgr;
-    QNetworkRequest req(url);
+    QNetworkRequest req = buildRevokeRequest(auth);
     QNetworkReply *reply = mgr.get(req);
     {
         QEventLoop loop;
