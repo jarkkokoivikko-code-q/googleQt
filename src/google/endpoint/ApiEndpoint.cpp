@@ -23,6 +23,8 @@
 
 using namespace googleQt;
 
+int googleQt::TIMES_TO_REFRESH_TOKEN_BEFORE_GIVEUP = 2;
+
 ApiEndpoint::ApiEndpoint(ApiClient* c):m_client(c)
 {
 }

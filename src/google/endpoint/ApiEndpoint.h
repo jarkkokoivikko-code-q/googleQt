@@ -37,9 +37,9 @@
 #define GQ_TRAIL_LOG(S)
 #endif
 
-#define TIMES_TO_REFRESH_TOKEN_BEFORE_GIVEUP 2
-
 namespace googleQt{
+    extern int TIMES_TO_REFRESH_TOKEN_BEFORE_GIVEUP;
+
     struct DiagnosticRequestInfo
     {
         QString context;
