@@ -57,6 +57,11 @@ GoogleClient::~GoogleClient()
     }
 };
 
+void GoogleClient::setNetworkAccessManager(QNetworkAccessManager *networkAccessManager)
+{
+    endpoint()->setNetworkAccessManager(networkAccessManager);
+};
+
 void GoogleClient::cancelAllRequests() 
 {
     m_endpoint->cancelAll();

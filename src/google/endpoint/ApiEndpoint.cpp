@@ -47,7 +47,22 @@ void ApiEndpoint::exitEventsLoop()const
 
 void ApiEndpoint::setProxy(const QNetworkProxy& proxy)
 {
-    m_con_mgr.setProxy(proxy);
+    networkAccessManager()->setProxy(proxy);
+};
+
+void ApiEndpoint::setNetworkAccessManager(QNetworkAccessManager *networkAccessManager)
+{
+    m_con_mgr = networkAccessManager;
+};
+
+QNetworkAccessManager *ApiEndpoint::networkAccessManager()
+{
+    if (!m_con_mgr) {
+        if (!m_own_con_mgr)
+            m_own_con_mgr.reset(new QNetworkAccessManager());
+        return m_own_con_mgr.get();
+    }
+    return m_con_mgr;
 };
 
 bool ApiEndpoint::isQueryInProgress()const 
@@ -250,7 +265,7 @@ QNetworkReply* ApiEndpoint::getData(const QNetworkRequest &req)
     LOG_REQUEST;
     return nullptr;
 #else
-    QNetworkReply *r = m_con_mgr.get(req);
+    QNetworkReply *r = networkAccessManager()->get(req);
     return r;
 #endif
 };
@@ -263,7 +278,7 @@ QNetworkReply* ApiEndpoint::postData(const QNetworkRequest &req, const QByteArra
     LOG_REQUEST;
     return nullptr;
 #else
-    QNetworkReply *r = m_con_mgr.post(req, data);
+    QNetworkReply *r = networkAccessManager()->post(req, data);
     return r;
 #endif
 };
@@ -277,7 +292,7 @@ QNetworkReply* ApiEndpoint::postData(const QNetworkRequest &req, QHttpMultiPart*
     LOG_REQUEST;
     return nullptr;
 #else
-    QNetworkReply *r = m_con_mgr.post(req, mpart);
+    QNetworkReply *r = networkAccessManager()->post(req, mpart);
     return r;
 #endif
 };
@@ -290,7 +305,7 @@ QNetworkReply* ApiEndpoint::putData(const QNetworkRequest &req, const QByteArray
     LOG_REQUEST;
     return nullptr;
 #else
-    QNetworkReply *r = m_con_mgr.put(req, data);
+    QNetworkReply *r = networkAccessManager()->put(req, data);
     return r;
 #endif
 };
@@ -303,7 +318,7 @@ QNetworkReply* ApiEndpoint::deleteData(const QNetworkRequest &req)
     LOG_REQUEST;
     return nullptr;
 #else
-    QNetworkReply *r = m_con_mgr.deleteResource(req);
+    QNetworkReply *r = networkAccessManager()->deleteResource(req);
     return r;
 #endif
 };
@@ -319,7 +334,7 @@ QNetworkReply* ApiEndpoint::patchData(const QNetworkRequest &req, const QByteArr
     QBuffer *buf = new QBuffer();
     buf->setData(data);
     buf->open(QBuffer::ReadOnly);
-    QNetworkReply *r = m_con_mgr.sendCustomRequest(req, "PATCH", buf);
+    QNetworkReply *r = networkAccessManager()->sendCustomRequest(req, "PATCH", buf);
     buf->setParent(r);
     return r;
 #endif

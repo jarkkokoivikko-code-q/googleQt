@@ -8,6 +8,7 @@
 #include <QEventLoop>
 #include <QHttpMultiPart>
 #include <QDebug>
+#include <QPointer>
 #include "ApiException.h"
 #include "ApiClient.h"
 
@@ -68,6 +69,8 @@ namespace googleQt{
         static QString          diagnosticTimeStamp();
         QByteArray    lastResponse()const { return m_last_response; };
         void          setProxy(const QNetworkProxy& proxy);
+        void          setNetworkAccessManager(QNetworkAccessManager *networkAccessManager);
+        QNetworkAccessManager *networkAccessManager();
 
         ApiClient*     apiClient() { return m_client; }
         const ApiClient*  apiClient()const { return m_client; }
@@ -392,7 +395,8 @@ namespace googleQt{
         void                    updateLastRequestInfo(QString s);
         void                    abortRequests();
     protected:
-        QNetworkAccessManager m_con_mgr;
+        QPointer<QNetworkAccessManager> m_con_mgr;
+        std::unique_ptr<QNetworkAccessManager> m_own_con_mgr;
         mutable QEventLoop    m_loop;
         ApiClient*            m_client;
         NET_REPLIES_IN_PROGRESS m_replies_in_progress;

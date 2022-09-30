@@ -32,6 +32,8 @@ class GoogleClient: public googleQt::ApiClient{
 public:
     ~GoogleClient();
 
+    void setNetworkAccessManager(QNetworkAccessManager *networkAccessManager);
+
     /**
     * gmail - v1 Google Gmail API
     */
