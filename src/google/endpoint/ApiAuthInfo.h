@@ -23,6 +23,7 @@ namespace googleQt{
         QString getEmail()const{return m_email; }
         QString getUserId()const{return m_userId; }
         int     getExpirationInSeconds() const;
+        QDateTime getExpirationTime() const {return m_expire_time;}
         QString getScope()const { return m_scope; }
 
     protected:
