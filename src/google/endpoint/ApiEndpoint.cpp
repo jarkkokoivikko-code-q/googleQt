@@ -72,13 +72,12 @@ void ApiEndpoint::cancelAll()
     ApiAutotest::INSTANCE().cancellAll();
 #endif
     if (!m_replies_in_progress.empty()) {
-        int i = 1;
         abortRequests();
-        for (; i < 5; i++) {
+        for (int i = 0; !m_replies_in_progress.empty() && i < 5; i++) {
             {
-                std::unique_ptr<QEventLoop> loop(new QEventLoop);
-                QTimer::singleShot(200, loop.get(), &QEventLoop::quit);
-                loop->exec();
+                QEventLoop loop;
+                QTimer::singleShot(200, &loop, &QEventLoop::quit);
+                loop.exec();
             }
             if (m_replies_in_progress.empty())
                 break;
