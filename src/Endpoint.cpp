@@ -37,11 +37,12 @@ QString Endpoint::prepareErrorSummary(int status_code)
         case 400:s = QObject::tr("Bad Request"); break;
         case 403:s = QObject::tr("Access denied. Please try to login again."); break;
         case 404:s = QObject::tr("File not found."); break;
+        case 499:s = QObject::tr("Operation cancelled."); break;
         case 500:s = QObject::tr("Internal Server Error. Please try again later."); break;
         }
-    QString rv = QString("%1").arg(status_code);
+    QString rv = QString("Error %1").arg(status_code);
     if (!s.isEmpty())
-        rv += QString(" - %1").arg(s);
+        rv += QString(": %1").arg(s);
     return rv;
 };
 
@@ -53,7 +54,7 @@ QString Endpoint::prepareErrorInfo(int status_code, const QUrl& url, const QByte
     if (js.contains("error")) {
         rv = js["error"].toObject()["message"].toString();
     } else {
-        rv = QObject::tr("Unexpected error %1").arg(prepareErrorSummary(status_code));
+        rv = prepareErrorSummary(status_code);
     }
 #ifdef API_QT_DIAGNOSTICS
     rv += "\n";

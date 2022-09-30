@@ -760,7 +760,17 @@ namespace googleQt{
                                  int status_code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
                                  const QNetworkReply::NetworkError error = reply->error();
                                  if (error == QNetworkReply::NetworkError::OperationCanceledError) {
+                                     // Cancel/Timeout is handled as http level error
                                      status_code = 499;
+                                 } else if (error != QNetworkReply::NetworkError::NoError) {
+                                     // Network errors are handled here
+                                     if (failed_callback != nullptr) {
+                                         const QString errorString = reply->errorString();
+                                         std::unique_ptr<GoogleException> ex(new GoogleException(QObject::tr("Network Error: %1").arg(errorString).toStdString(),
+                                                                                                 error));
+                                         failed_callback(std::move(ex));
+                                     }
+                                     return;
                                  }
                                  switch (status_code)
                                      {
