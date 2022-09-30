@@ -13,15 +13,15 @@ using namespace googleQt;
 
 QUrl GoogleWebAuth::getCodeAuthorizeUrl(std::shared_ptr<const ApiAppInfo> appInfo, QString scope, const QString &redirectUrl)
 {
-    QUrl url(QString("https://%1/%2").arg(GoogleHost::DEFAULT().getAuth()).arg("o/oauth2/auth"));
+    QUrl url(u"https://%1/%2"_qs.arg(GoogleHost::DEFAULT().getAuth(), u"o/oauth2/auth"_qs));
     QUrlQuery q;
-    q.addQueryItem("response_type", "code");
-    q.addQueryItem("client_id", appInfo->getKey());
+    q.addQueryItem(u"response_type"_qs, u"code"_qs);
+    q.addQueryItem(u"client_id"_qs, appInfo->getKey());
     if (!redirectUrl.isEmpty())
-        q.addQueryItem("redirect_uri", redirectUrl);
+        q.addQueryItem(u"redirect_uri"_qs, redirectUrl);
     else
-        q.addQueryItem("redirect_uri", "urn:ietf:wg:oauth:2.0:oob");
-    q.addQueryItem("scope", scope);
+        q.addQueryItem(u"redirect_uri"_qs, u"urn:ietf:wg:oauth:2.0:oob"_qs);
+    q.addQueryItem(u"scope"_qs, scope);
     
     url.setQuery(q);
     return url;
@@ -84,17 +84,14 @@ int GoogleWebAuth::updateToken(const QNetworkRequest& req, std::shared_ptr<ApiAu
 
 QNetworkRequest GoogleWebAuth::buildGetTokenRequest(QByteArray &outData, std::shared_ptr<const ApiAppInfo> appInfo, QString code, std::shared_ptr<ApiAuthInfo> auth, const QString &redirectUrl)
 {
-    QUrl url(QString("https://%1/%2").arg(GoogleHost::DEFAULT().getAuth()).arg("o/oauth2/token"));
-    QString str = QString("code=%1&client_id=%2&client_secret=%3&grant_type=%4&redirect_uri=%5")
-        .arg(code)
-        .arg(appInfo->getKey())
-        .arg(appInfo->getSecret())
-        .arg("authorization_code")
-        .arg(!redirectUrl.isEmpty() ? redirectUrl : QString("urn:ietf:wg:oauth:2.0:oob"));
+    QUrl url(u"https://%1/%2"_qs.arg(GoogleHost::DEFAULT().getAuth(), u"o/oauth2/token"_qs));
+    QString str = u"code=%1&client_id=%2&client_secret=%3&grant_type=%4&redirect_uri=%5"_qs
+        .arg(code, appInfo->getKey(), appInfo->getSecret(), u"authorization_code"_qs,
+             !redirectUrl.isEmpty() ? redirectUrl : u"urn:ietf:wg:oauth:2.0:oob"_qs);
     outData = str.toUtf8();
 
     QNetworkRequest req(url);
-    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded"_qba);
 
     return req;
 };
@@ -113,17 +110,15 @@ int GoogleWebAuth::getTokenFromCode(std::shared_ptr<const ApiAppInfo> appInfo, Q
 
 QNetworkRequest GoogleWebAuth::buildRefreshTokenRequest(QByteArray &outData, std::shared_ptr<const ApiAppInfo> appInfo, std::shared_ptr<ApiAuthInfo> auth)
 {
-    QUrl url(QString("https://%1/%2").arg(GoogleHost::DEFAULT().getAuth()).arg("o/oauth2/token"));
-    QString str = QString("refresh_token=%1&client_id=%2&grant_type=%3")
-        .arg(auth->getRefreshToken())
-        .arg(appInfo->getKey())
-        .arg("refresh_token");
+    QUrl url(u"https://%1/%2"_qs.arg(GoogleHost::DEFAULT().getAuth(), u"o/oauth2/token"_qs));
+    QString str = u"refresh_token=%1&client_id=%2&grant_type=%3"_qs
+        .arg(auth->getRefreshToken(), appInfo->getKey(), u"refresh_token"_qs);
     if (!appInfo->getSecret().isEmpty())
-        str.append(QString("&client_secret=%1").arg(appInfo->getSecret()));
+        str.append(u"&client_secret=%1"_qs.arg(appInfo->getSecret()));
     outData = str.toUtf8();
 
     QNetworkRequest req(url);
-    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded"_qba);
 
     return req;
 };
@@ -138,10 +133,9 @@ int GoogleWebAuth::refreshToken(std::shared_ptr<const ApiAppInfo> appInfo, std::
 
 QNetworkRequest GoogleWebAuth::buildUserEmailRequest(std::shared_ptr<ApiAuthInfo> auth)
 {
-    QUrl url(u"https://www.googleapis.com/oauth2/v2/userinfo"_qs);
+    QUrl url(u"https://%1/%2"_qs.arg(GoogleHost::DEFAULT().getApi(), u"oauth2/v2/userinfo"_qs));
     QNetworkRequest req(url);
-    QString bearer = QString("Bearer %1").arg(auth->getAccessToken());
-    req.setRawHeader("Authorization", bearer.toUtf8());
+    req.setRawHeader("Authorization"_qba, u"Bearer %1"_qs.arg(auth->getAccessToken()).toUtf8());
     return req;
 };
 
@@ -179,7 +173,10 @@ void GoogleWebAuth::updateUserEmail(std::shared_ptr<ApiAuthInfo> auth)
 
 QNetworkRequest GoogleWebAuth::buildRevokeRequest(std::shared_ptr<ApiAuthInfo> auth)
 {
-    QUrl url(u"https://accounts.google.com/o/oauth2/revoke?token=%1"_qs.arg(auth->getAccessToken()));
+    QUrl url(u"https://%1/%2"_qs.arg(GoogleHost::DEFAULT().getAuth(), u"o/oauth2/revoke"_qs));
+    QUrlQuery q;
+    q.addQueryItem(u"token"_qs, auth->getAccessToken());
+    url.setQuery(q);
     QNetworkRequest req(url);
     return req;
 };
@@ -213,20 +210,20 @@ void GoogleWebAuth::revoke(std::shared_ptr<ApiAuthInfo> auth)
 
 #define DEFINE_SCOPE(N, L) QString GoogleWebAuth::N(){return L;};
 
-DEFINE_SCOPE(authScope_userinfo_email,  "https://www.googleapis.com/auth/userinfo.email");
-DEFINE_SCOPE(authScope_gmail_labels,    "https://www.googleapis.com/auth/gmail.labels");
-DEFINE_SCOPE(authScope_gmail_readonly,  "https://www.googleapis.com/auth/gmail.readonly");
-DEFINE_SCOPE(authScope_gmail_compose,   "https://www.googleapis.com/auth/gmail.compose");
-DEFINE_SCOPE(authScope_gmail_send,      "https://www.googleapis.com/auth/gmail.send");
-DEFINE_SCOPE(authScope_gmail_modify,    "https://www.googleapis.com/auth/gmail.modify");
-DEFINE_SCOPE(authScope_full_access,     "https://mail.google.com/");
-DEFINE_SCOPE(authScope_tasks,           "https://www.googleapis.com/auth/tasks");
-DEFINE_SCOPE(authScope_tasks_readonly,  "https://www.googleapis.com/auth/tasks.readonly");
-DEFINE_SCOPE(authScope_gdrive,          "https://www.googleapis.com/auth/drive");
-DEFINE_SCOPE(authScope_gdrive_file,     "https://www.googleapis.com/auth/drive.file");
-DEFINE_SCOPE(authScope_gdrive_readonly, "https://www.googleapis.com/auth/drive.readonly");
-DEFINE_SCOPE(authScope_gdrive_appdata,  "https://www.googleapis.com/auth/drive.appdata");
-DEFINE_SCOPE(authScope_contacts_modify,  "https://www.google.com/m8/feeds");
-DEFINE_SCOPE(authScope_contacts_read_only,  "https://www.googleapis.com/auth/contacts.readonly");
+DEFINE_SCOPE(authScope_userinfo_email,      u"https://www.googleapis.com/auth/userinfo.email"_qs);
+DEFINE_SCOPE(authScope_gmail_labels,        u"https://www.googleapis.com/auth/gmail.labels"_qs);
+DEFINE_SCOPE(authScope_gmail_readonly,      u"https://www.googleapis.com/auth/gmail.readonly"_qs);
+DEFINE_SCOPE(authScope_gmail_compose,       u"https://www.googleapis.com/auth/gmail.compose"_qs);
+DEFINE_SCOPE(authScope_gmail_send,          u"https://www.googleapis.com/auth/gmail.send"_qs);
+DEFINE_SCOPE(authScope_gmail_modify,        u"https://www.googleapis.com/auth/gmail.modify"_qs);
+DEFINE_SCOPE(authScope_full_access,         u"https://mail.google.com/"_qs);
+DEFINE_SCOPE(authScope_tasks,               u"https://www.googleapis.com/auth/tasks"_qs);
+DEFINE_SCOPE(authScope_tasks_readonly,      u"https://www.googleapis.com/auth/tasks.readonly"_qs);
+DEFINE_SCOPE(authScope_gdrive,              u"https://www.googleapis.com/auth/drive"_qs);
+DEFINE_SCOPE(authScope_gdrive_file,         u"https://www.googleapis.com/auth/drive.file"_qs);
+DEFINE_SCOPE(authScope_gdrive_readonly,     u"https://www.googleapis.com/auth/drive.readonly"_qs);
+DEFINE_SCOPE(authScope_gdrive_appdata,      u"https://www.googleapis.com/auth/drive.appdata"_qs);
+DEFINE_SCOPE(authScope_contacts_modify,     u"https://www.google.com/m8/feeds"_qs);
+DEFINE_SCOPE(authScope_contacts_read_only,  u"https://www.googleapis.com/auth/contacts.readonly"_qs);
 
 #undef DEFINE_SCOPE

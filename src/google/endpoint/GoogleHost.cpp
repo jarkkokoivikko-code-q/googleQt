@@ -5,7 +5,7 @@ using namespace googleQt;
 GoogleHost default_gmail_host;
 
 GoogleHost::GoogleHost():
-    m_api("googleapis.com"),
+    m_api("www.googleapis.com"),
     m_auth("accounts.google.com")
 {
 };
