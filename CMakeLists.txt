@@ -222,4 +222,6 @@ target_link_libraries(googleQt
     PUBLIC Qt6::Core Qt6::Network Qt6::Xml Qt6::Sql Qt6::Core5Compat Qt6::Gui
 )
 
+if(CMAKE_BUILD_TYPE MATCHES Debug)
 add_subdirectory(examples)
+endif()
