@@ -29,6 +29,7 @@ void ApiAuthInfo::purge()
     m_scope.clear();
     m_email.clear();
     m_userId.clear();
+    m_revoked = false;
 };
 
 bool ApiAuthInfo::readFromFile(QString path)
@@ -49,6 +50,7 @@ void ApiAuthInfo::loadFromJson(const QJsonObject &js)
     m_scope = js["scope"].toString();
     m_email = js["email"].toString();
     m_userId = js["user_id"].toString();
+    m_revoked = js["revoked"].toBool();
 };
 
 bool ApiAuthInfo::storeToFile(QString path)const
@@ -66,6 +68,7 @@ QJsonObject ApiAuthInfo::saveToJson() const
     js["scope"] = m_scope;
     js["email"] = m_email;
     js["user_id"] = m_userId;
+    js["revoked"] = m_revoked;
     return js;
 };
 
@@ -99,6 +102,7 @@ bool ApiAuthInfo::updateToken(const QJsonObject& js_in)
     m_type = js_in["token_type"].toString();
     m_expire_time = QDateTime::currentDateTime().addSecs(js_in["expires_in"].toInt());
     m_scope = js_in["scope"].toString();
+    m_revoked = false;
     //do don't update email - it will be empty on refresh
     //email/userid is something that is setup on client side
 

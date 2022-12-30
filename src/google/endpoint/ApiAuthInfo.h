@@ -17,6 +17,7 @@ namespace googleQt{
         bool updateToken(const QJsonObject& js_in);
         void setEmail(QString email){ m_email = email; }
         void setUserId(QString id){ m_userId = id; }
+        void setRevoked(bool revoked){ m_revoked = revoked; }
 
         QString getAccessToken()const {return m_accessToken;}
         QString getRefreshToken()const{return m_refreshToken;}
@@ -25,6 +26,7 @@ namespace googleQt{
         int     getExpirationInSeconds() const;
         QDateTime getExpirationTime() const {return m_expire_time;}
         QString getScope()const { return m_scope; }
+        bool isRevoked()const {return m_revoked; }
 
     protected:
         virtual bool readFromFile(QString path);
@@ -41,5 +43,6 @@ namespace googleQt{
         QString m_scope;
         QString m_email;
         QString m_userId;
+        bool m_revoked = false;
     };
 }//dropboxQt
