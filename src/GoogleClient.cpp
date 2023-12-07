@@ -7,8 +7,11 @@
 #include "gdrive/GdriveRoutes.h"
 #include "gcontact/GcontactRoutes.h"
 #include "gcontact/GcontactCache.h"
+#include <QLoggingCategory>
 
 using namespace googleQt;
+
+Q_LOGGING_CATEGORY(lcGoogleQt, "googleQt")
 
 #ifdef API_QT_AUTOTEST
 int g__gclient_alloc_counter = 0;
@@ -108,19 +111,13 @@ QByteArray GoogleClient::lastResponse()
 
 void GoogleClient::printLastApiCall()
 {
-    std::cout << "-----------------------------------------" << std::endl;
-    std::cout << "API call" << std::endl;
-    std::cout << lastApiCall().toStdString() << std::endl;
+    qCInfo(lcGoogleQt).noquote() << "API call" << lastApiCall();
 };
 
 void GoogleClient::printLastResponse() 
 {
-    std::cout << "-----------------------------------------" << std::endl;
-    std::cout << "API call" << std::endl;
-    std::cout << lastApiCall().toStdString() << std::endl;    
-    std::cout << "-----------------------------------------" << std::endl;
-    std::cout << "response" << std::endl;
-    std::cout << lastResponse().toStdString() << std::endl;
+    qCInfo(lcGoogleQt).noquote() << "API call:" << lastApiCall();
+    qCInfo(lcGoogleQt).noquote() << "Response:" << lastResponse();
 };
 
 void GoogleClient::exportLastResponse(QString fileName) 

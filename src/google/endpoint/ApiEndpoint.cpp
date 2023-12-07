@@ -1,6 +1,7 @@
 #include <iostream>
 #include <QBuffer>
 #include <QTimer>
+#include <QLoggingCategory>
 #include "ApiEndpoint.h"
 
 #ifdef API_QT_AUTOTEST
@@ -8,7 +9,7 @@
 #define LOG_REQUEST     ApiAutotest::INSTANCE().logRequest(lastRequestInfo().request);
 #endif
 
-#ifdef API_QT_DIAGNOSTICS
+#if defined(API_QT_DIAGNOSTICS) || defined(QT_DEBUG)
 #define TRACE_REQUEST(C, R, D)     QString rinfo = QString(C) + " " + R.url().toString() + "\n";\
                                     QList<QByteArray> lst = R.rawHeaderList();\
                                     for (QList<QByteArray>::iterator i = lst.begin(); i != lst.end(); i++)\
@@ -20,6 +21,8 @@
 #else
     #define TRACE_REQUEST(C, R, D)
 #endif
+
+Q_DECLARE_LOGGING_CATEGORY(lcGoogleQt)
 
 using namespace googleQt;
 
@@ -171,6 +174,9 @@ QString ApiEndpoint::diagnosticTimeStamp()
 void ApiEndpoint::setLastResponse(const QByteArray &lastResponse)
 {
     m_last_response = lastResponse;
+#ifdef QT_DEBUG
+    qCDebug(lcGoogleQt).noquote() << lastResponse;
+#endif
 }
 
 void ApiEndpoint::diagnosticSetRequestTag(QString s)
@@ -218,9 +224,7 @@ void ApiEndpoint::diagnosticLogAsyncTask(EndpointRunnable* task, TaskState s)
     case TaskState::failed:     sname = "f"; break;
     case TaskState::canceled:   sname = "e"; break;
     }
-    QDebug o = qWarning();
-    o.noquote();
-    o << diagnosticTimeStamp() << QString("[g-diagn-task][%1][%2][%3][%4]")
+    qCWarning(lcGoogleQt).noquote() << diagnosticTimeStamp() << QString("[g-diagn-task][%1][%2][%3][%4]")
                         .arg(sname)
                         .arg(m_diagnosticsRequestContext)
                         .arg(m_diagnosticsRequestTag)
@@ -260,6 +264,9 @@ void ApiEndpoint::updateLastRequestInfo(QString s)
         m_requests.erase(m_requests.begin(), m_requests.begin() + 256);
     }
 #endif //API_QT_DIAGNOSTICS
+#ifdef QT_DEBUG
+    qCDebug(lcGoogleQt).noquote() << QStringView(s.utf16(), 1024) << (s.length() > 1024 ? " ..." : "");
+#endif
 };
 
 QNetworkReply* ApiEndpoint::getData(const QNetworkRequest &req)
