@@ -36,13 +36,14 @@ namespace googleQt {
             void build(const QString& link_path, QUrl& url)const override;
 
             /**
-            The source of files to list. 
-            Acceptable values are:
-            "domain": Files shared to the user's domain.
-            "user": Files owned by or shared to the user. (default)
+            Bodies of items (files/documents) to which the query applies.
+            Supported bodies are 'user', 'domain', 'drive', and 'allDrives'.
+            Prefer 'user' or 'drive' to 'allDrives' for efficiency. By default,
+            corpora is set to 'user'. However, this can change depending on the
+            filter set through the 'q' parameter.
             */
-            QString getCorpus()const { return m_corpus; }
-            void    setCorpus(QString val) { m_corpus = val; }
+            QString getCorpora()const { return m_corpora; }
+            void    setCorpora(QString val) { m_corpora = val; }
 
             /**
                 A comma-separated list of sort keys. Valid keys are 'createdTime', 'folder', 
@@ -89,7 +90,7 @@ namespace googleQt {
 #endif //API_QT_AUTOTEST
 
         protected:
-            QString m_corpus;
+            QString m_corpora;
             QString m_orderBy;
             int     m_pageSize;
             QString m_pageToken;

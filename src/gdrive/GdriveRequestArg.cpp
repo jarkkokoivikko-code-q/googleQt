@@ -31,7 +31,7 @@ void AboutArg::build(const QString& link_path, QUrl& url)const
     FileListArg
 */
 FileListArg::FileListArg(QString pageToken):
-    m_corpus("user"),
+    m_corpora("user"),
     m_pageSize(100),
     m_pageToken(pageToken)
 {
@@ -41,7 +41,7 @@ FileListArg::FileListArg(QString pageToken):
 void FileListArg::build(const QString& link_path, QUrl& url)const
 {
     UrlBuilder b(link_path + "/files", url);
-    b.add("corpus", m_corpus)
+    b.add("corpora", m_corpora)
         .add("pageSize", m_pageSize)
         .add("orderBy", m_orderBy)
         .add("pageToken", m_pageToken)
