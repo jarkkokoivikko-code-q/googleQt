@@ -290,9 +290,10 @@ CreatePermissionArg::CreatePermissionArg()
 void CreatePermissionArg::build(const QString& link_path, QUrl& url)const 
 {
     UrlBuilder b(link_path + QString("/files/%1/permissions").arg(m_fileId), url);
-    b.add("emailMessage", m_emailMessage)
-        .add("sendNotificationEmail", m_sendNotificationEmail)
-        .add("transferOwnership", m_transferOwnership);
+    if (m_sendNotificationEmail && !m_emailMessage.isEmpty())
+        b.add("emailMessage", m_emailMessage);
+    b.add("sendNotificationEmail", m_sendNotificationEmail);
+    b.add("transferOwnership", m_transferOwnership);
 };
 
 /**
