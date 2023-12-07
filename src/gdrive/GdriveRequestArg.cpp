@@ -308,6 +308,7 @@ PermissionListArg::PermissionListArg(QString fileId)
 void PermissionListArg::build(const QString& link_path, QUrl& url)const 
 {
     UrlBuilder b(link_path + QString("/files/%1/permissions").arg(m_fileId), url);
+    ResponseFields2Builder(b);
 };
 
 /**
