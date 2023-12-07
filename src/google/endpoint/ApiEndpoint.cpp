@@ -305,6 +305,7 @@ QNetworkReply* ApiEndpoint::postData(const QNetworkRequest &req, QHttpMultiPart*
     return nullptr;
 #else
     QNetworkReply *r = networkAccessManager()->post(req, mpart);
+    mpart->setParent(r);
     return r;
 #endif
 };
@@ -352,12 +353,25 @@ QNetworkReply* ApiEndpoint::patchData(const QNetworkRequest &req, const QByteArr
 #endif
 };
 
+QNetworkReply *ApiEndpoint::patchData(const QNetworkRequest &req, QHttpMultiPart *mpart)
+{
+    TRACE_REQUEST("PATCH", req, "multipart");
+
+#ifdef API_QT_AUTOTEST
+    Q_UNUSED(mpart);
+    LOG_REQUEST;
+    return nullptr;
+#else
+    QNetworkReply *r = networkAccessManager()->sendCustomRequest(req, "PATCH", mpart);
+    mpart->setParent(r);
+    return r;
+#endif
+};
 
 ///MPartUpload_requester
 QNetworkReply* ApiEndpoint::MPartUpload_requester::request(QNetworkRequest& r)
 {
     QByteArray meta_bytes;
-    QJsonDocument doc(m_js_out);
     if (m_js_out.isEmpty()) {
         meta_bytes.append("null");
     }
@@ -365,31 +379,22 @@ QNetworkReply* ApiEndpoint::MPartUpload_requester::request(QNetworkRequest& r)
         QJsonDocument doc(m_js_out);
         meta_bytes = doc.toJson(QJsonDocument::Compact);
     }
-                
-    QString delimiter("OooOOoo17gqt");
-    QByteArray bytes2post = QString("--%1\r\n").arg(delimiter).toUtf8();
-    bytes2post += QString("Content-Type: application/json; charset=UTF-8\r\n").toUtf8();
-    bytes2post += "\r\n";
-    bytes2post += meta_bytes;
-                
-    bytes2post += "\r\n";
-    bytes2post += QString("--%1\r\n").arg(delimiter).toUtf8();
-    bytes2post += QString("Content-Type: application/octet-stream\r\n").toUtf8();
-    bytes2post += QString("Content-Transfer-Encoding: base64\r\n\r\n").toUtf8();
-    //bytes2post += "\r\n";
-    if (m_readFrom) {
-        //        bytes2post += m_readFrom->readAll().toBase64(QByteArray::Base64UrlEncoding);
-        bytes2post += m_readFrom->readAll().toBase64(QByteArray::Base64Encoding);
-    }
-    bytes2post += "\r\n";
-    bytes2post += QString("--%1--\r\n").arg(delimiter).toUtf8();
 
-    QString content_str = QString("multipart/related; boundary=%1").arg(delimiter);
-    r.setRawHeader("Content-Type", content_str.toUtf8());
-    r.setRawHeader("Content-Length", QString("%1").arg(bytes2post.size()).toUtf8());
+    QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
+
+    QHttpPart jsonPart;
+    jsonPart.setHeader(QNetworkRequest::ContentTypeHeader, "application/json; charset=UTF-8"_qba);
+    jsonPart.setBody(meta_bytes);
+    multiPart->append(jsonPart);
+
+    QHttpPart filePart;
+    filePart.setHeader(QNetworkRequest::ContentTypeHeader, "application/octet-stream"_qba);
+    filePart.setBodyDevice(m_readFrom);
+    multiPart->append(filePart);
+
     if (!r.url().path().endsWith("files"))
-        return m_ep.patchData(r, bytes2post);
-    return m_ep.postData(r, bytes2post);
+        return m_ep.patchData(r, multiPart);
+    return m_ep.postData(r, multiPart);
 }
 
 /**

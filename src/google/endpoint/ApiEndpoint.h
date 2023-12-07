@@ -84,7 +84,8 @@ namespace googleQt{
         virtual QNetworkReply*  putData(const QNetworkRequest &request, const QByteArray& data);
         virtual QNetworkReply*  deleteData(const QNetworkRequest &request);
         virtual QNetworkReply*  patchData(const QNetworkRequest &request, const QByteArray& data);
-        
+        virtual QNetworkReply*  patchData(const QNetworkRequest &request, QHttpMultiPart* mpart);
+
     protected:
         class requester
         {
