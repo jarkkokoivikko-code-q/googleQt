@@ -133,3 +133,43 @@ void PermissionsRoutes::list_AsyncCB(
         failed_callback);
 }
 
+std::unique_ptr<ResourcePermission> PermissionsRoutes::update(const gdrive::UpdatePermissionArg &arg, const ResourcePermission &body)
+{
+    return update_Async(arg, body)->waitForResultAndRelease();
+}
+
+GoogleTask<ResourcePermission> *PermissionsRoutes::update_Async(
+    const gdrive::UpdatePermissionArg &arg,
+    const ResourcePermission &body)
+{
+    GoogleTask<ResourcePermission>* t = m_end_point->produceTask<ResourcePermission>();
+    m_end_point->updateStyle
+        <
+        ResourcePermission,
+        ResourcePermission::factory,
+        ResourcePermission
+        >
+        (m_end_point->buildGdriveUrl("permissions", arg),
+         body,
+         t);
+    return t;
+}
+
+void PermissionsRoutes::update_AsyncCB(
+    const gdrive::UpdatePermissionArg &arg,
+    const ResourcePermission &body,
+    std::function<void (std::unique_ptr<ResourcePermission>)> completed_callback,
+    std::function<void (std::unique_ptr<GoogleException>)> failed_callback)
+{
+    m_end_point->updateStyle
+        <
+        ResourcePermission,
+        ResourcePermission::factory,
+        ResourcePermission
+        >
+        (m_end_point->buildGdriveUrl("permissions", arg),
+         body,
+         completed_callback,
+         failed_callback);
+}
+

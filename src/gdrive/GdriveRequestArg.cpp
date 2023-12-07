@@ -311,6 +311,19 @@ void PermissionListArg::build(const QString& link_path, QUrl& url)const
     ResponseFields2Builder(b);
 };
 
+UpdatePermissionArg::UpdatePermissionArg(QString fileId, QString permissionId)
+    :PermissionArg(fileId, permissionId)
+{
+
+}
+
+void UpdatePermissionArg::build(const QString &link_path, QUrl &url) const
+{
+    UrlBuilder b(link_path + QString("/files/%1/permissions/%2").arg(m_fileId).arg(m_permissionId), url);
+    b.add("removeExpiration", m_removeExpiration)
+        .add("transferOwnership", m_transferOwnership);
+}
+
 /**
     CreateCommentArg
 */

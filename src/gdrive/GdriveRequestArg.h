@@ -530,7 +530,31 @@ namespace googleQt {
             QString m_fileId;
         };
 
-        
+        class UpdatePermissionArg : public PermissionArg
+        {
+        public:
+            UpdatePermissionArg(QString fileId, QString permissionId);
+            void build(const QString& link_path, QUrl& url)const override;
+
+            /**
+                Whether to remove the expiration date. (Default: false)
+            */
+            bool    getRemoveExpiration()const { return m_removeExpiration; }
+            void    setRemoveExpiration(bool val) { m_removeExpiration = val; }
+
+            /**
+                Whether to transfer ownership to the specified user and downgrade the current
+                owner to a writer. This parameter is required as an acknowledgement of the
+                side effect. (Default: false)
+            */
+            bool    getTransferOwnership()const { return m_transferOwnership; }
+            void    setTransferOwnership(bool val) { m_transferOwnership = val; }
+
+        protected:
+            bool    m_removeExpiration = false;
+            bool    m_transferOwnership = false;
+        };
+
         class CreateCommentArg : public QParamArg
         {
         public:

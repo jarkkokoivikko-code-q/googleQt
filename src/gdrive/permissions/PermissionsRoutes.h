@@ -78,6 +78,21 @@ namespace permissions{
             std::function<void(std::unique_ptr<PermissionResourcesCollection>)> completed_callback = nullptr,
             std::function<void(std::unique_ptr<GoogleException>)> failed_callback = nullptr);
 
+            /**
+            ApiRoute('update')
+
+
+            Update permission
+
+            */
+        std::unique_ptr<ResourcePermission> update(const gdrive::UpdatePermissionArg& arg, const ResourcePermission& body);
+        GoogleTask<ResourcePermission>* update_Async(const gdrive::UpdatePermissionArg& arg, const ResourcePermission& body);
+        void update_AsyncCB(
+            const gdrive::UpdatePermissionArg& arg,
+            const ResourcePermission& body,
+            std::function<void(std::unique_ptr<ResourcePermission>)> completed_callback = nullptr,
+            std::function<void(std::unique_ptr<GoogleException>)> failed_callback = nullptr);
+
     protected:
     };//PermissionsRoutes
 
