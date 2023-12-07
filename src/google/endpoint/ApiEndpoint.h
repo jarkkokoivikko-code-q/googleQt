@@ -67,6 +67,7 @@ namespace googleQt{
         void                    diagnosticLogAsyncTask(EndpointRunnable* task, TaskState s);
         void                    diagnosticLogSQL(QString sql, QString prefix);
         static QString          diagnosticTimeStamp();
+        void          setLastResponse(const QByteArray &lastResponse);
         QByteArray    lastResponse()const { return m_last_response; };
         void          setProxy(const QNetworkProxy& proxy);
         void          setNetworkAccessManager(QNetworkAccessManager *networkAccessManager);

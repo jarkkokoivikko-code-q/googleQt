@@ -168,6 +168,11 @@ QString ApiEndpoint::diagnosticTimeStamp()
     return rv;
 };
 
+void ApiEndpoint::setLastResponse(const QByteArray &lastResponse)
+{
+    m_last_response = lastResponse;
+}
+
 void ApiEndpoint::diagnosticSetRequestTag(QString s)
 {    
 #ifdef API_QT_DIAGNOSTICS

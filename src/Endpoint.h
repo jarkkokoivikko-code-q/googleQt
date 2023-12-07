@@ -779,8 +779,9 @@ namespace googleQt{
                                          {
                                              if (completed_callback != nullptr)
                                                  {
-                                                    m_last_response = reply->readAll();
-                                                    completed_callback(factory.create(m_last_response));
+                                                    QByteArray responseData = reply->readAll();
+                                                    setLastResponse(responseData);
+                                                    completed_callback(factory.create(responseData));
                                                  }
                                          }break;
                                      case 202:
@@ -793,10 +794,11 @@ namespace googleQt{
                                          }break;
                                      case 401:
                                          {
-                                             m_last_response = reply->readAll();
+                                             QByteArray responseData = reply->readAll();
+                                             setLastResponse(responseData);
                                              if (authErrorsLimit > 0)
                                                  {
-                                                     std::unique_ptr<errors::ErrorInfo> er = errors::ErrorInfo::factory::create(m_last_response);
+                                                     std::unique_ptr<errors::ErrorInfo> er = errors::ErrorInfo::factory::create(responseData);
                                                      onErrorUnauthorized(er.get());
                                                      //have to reset auth header as it got changed, side-effect..
                                                      authErrorsLimit--;
@@ -825,7 +827,7 @@ namespace googleQt{
                                                                << TIMES_TO_REFRESH_TOKEN_BEFORE_GIVEUP << " attempts";
                                                      if (failed_callback != nullptr)
                                                          {
-                                                             std::string errorInfo = prepareErrorInfo(status_code, url, m_last_response).toStdString();
+                                                             std::string errorInfo = prepareErrorInfo(status_code, url, responseData).toStdString();
                                                              std::unique_ptr<GoogleException> ex(new GoogleException(errorInfo,
                                                                                                                      status_code,
                                                                                                                      "Failed to refresh access token"));
@@ -837,10 +839,11 @@ namespace googleQt{
                                          {
                                              if (failed_callback != nullptr) {
                                                  std::string summary = prepareErrorSummary(status_code).toStdString();
-                                                 m_last_response = reply->readAll();
+                                                 QByteArray responseData = reply->readAll();
+                                                 setLastResponse(responseData);
                                                  std::string errorInfo = prepareErrorInfo(status_code,
                                                                                           url,
-                                                                                          m_last_response).toStdString();
+                                                                                          responseData).toStdString();
                                                  std::unique_ptr<GoogleException> ex(new GoogleException(errorInfo,
                                                                                                          status_code,
                                                                                                          summary));
