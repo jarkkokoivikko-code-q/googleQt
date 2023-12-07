@@ -409,12 +409,7 @@ void ApiEndpoint::requester::addAuthHeader(QNetworkRequest& request)
     if (h && h[0]) {
         request.setRawHeader("Host", h);
     }
-    QString user_agent = DEF_USER_AGENT;
-    if (!m_ep.apiClient()->userAgent().isEmpty()) {
-        user_agent = QString("%1 %2")
-            .arg(m_ep.apiClient()->userAgent())
-            .arg(DEF_USER_AGENT);
-    }
+    QString user_agent = !m_ep.apiClient()->userAgent().isEmpty() ? m_ep.apiClient()->userAgent() : DEF_USER_AGENT;
     request.setRawHeader("User-Agent", user_agent.toUtf8());
 
 #undef DEF_USER_AGENT
