@@ -35,7 +35,8 @@ void ResourcePermission::toJson(QJsonObject& js)const{
         js["domain"] = QString(m_domain);
     if(!m_role.isEmpty())
         js["role"] = QString(m_role);
-    js["allowFileDiscovery"] = m_allowFileDiscovery;
+    if(m_role == u"domain" || m_role == u"anyone")
+        js["allowFileDiscovery"] = m_allowFileDiscovery;
     if(!m_displayName.isEmpty())
         js["displayName"] = QString(m_displayName);
     if(!m_photoLink.isEmpty())

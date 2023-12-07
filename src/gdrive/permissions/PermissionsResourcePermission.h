@@ -172,7 +172,7 @@ namespace permissions{
                 search. This is only applicable for permissions of type domain
                 or anyone.
             */
-        bool m_allowFileDiscovery;
+        bool m_allowFileDiscovery = false;
 
             /**
                 A displayable name for users, groups or domains.
