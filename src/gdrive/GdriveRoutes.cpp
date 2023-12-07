@@ -554,3 +554,30 @@ std::pair<QString, QString> GdriveRoutes::shareFile(QString localFilePath, QStri
 
     return rv;
 };
+
+GdriveRoutes::PermissionsList GdriveRoutes::listPermissions(QString fileId)
+{
+    PermissionsList rv;
+
+    gdrive::PermissionListArg arg(fileId);
+    try
+    {
+        auto lst = getPermissions()->list(arg);
+        rv = processPermissionsList(*lst);
+    }
+    catch (GoogleException& e)
+    {
+        qWarning() << "GdriveRoutes::listPermissions Exception: " << e.what();
+    }
+    return rv;
+}
+
+GdriveRoutes::PermissionsList GdriveRoutes::processPermissionsList(const permissions::PermissionResourcesCollection &result)
+{
+    PermissionsList rv;
+    auto files = result.permissions();
+    for (auto i = files.begin(); i != files.end(); i++) {
+        rv.append(*i);
+    }
+    return rv;
+}

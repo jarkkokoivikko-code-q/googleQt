@@ -25,6 +25,7 @@ namespace googleQt
         revisions::RevisionsRoutes* getRevisions();
 
         typedef QList<files::FileResource> FolderContentList;
+        typedef QList<permissions::ResourcePermission> PermissionsList;
 
         ///reserved folder for app-settings&files
         static QString appDataFolder();
@@ -78,6 +79,10 @@ namespace googleQt
         static FolderContentList processMapFolderContent(const files::FileResourcesCollection &result);
         /// upload and share file to 'anyone', returns pair<fileId, webLink> of new shared file
         std::pair<QString, QString> shareFile(QString localFilePath, QString destFileName, QString parentFolderId = "", QString mimeType = "");
+        /// List permissions
+        PermissionsList listPermissions(QString fileId);
+        /// process async result
+        static PermissionsList processPermissionsList(const permissions::PermissionResourcesCollection &result);
 #ifdef API_QT_AUTOTEST
         void autotest() {};
 #endif
